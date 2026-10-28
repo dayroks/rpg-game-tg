@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Темне Королівство</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0b0810;
+    --ember: #d4a947;
+    --ember-dim: rgba(212, 169, 71, 0.28);
+    --bone: #e9dfc8;
+    --muted: #9a8f7c;
+    --glass: rgba(255, 255, 255, 0.055);
+    --glass-strong: rgba(18, 12, 26, 0.72);
+    --radius: 14px;
+    --font: "Cinzel", "Georgia", "Times New Roman", serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    height: 100%; height: 100dvh; overflow: hidden; overscroll-behavior: none;
+    background: var(--ink); color: var(--bone); font-family: var(--font);
+    -webkit-user-select: none; user-select: none;
+  }
+  #app {
+    height: 100vh; height: 100dvh; height: var(--tg-viewport-stable-height, 100dvh);
+    display: flex; flex-direction: column;
+    padding-top: env(safe-area-inset-top, 0px);
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(120, 40, 60, 0.35), transparent 55%),
+      radial-gradient(ellipse at 50% 100%, rgba(212, 169, 71, 0.10), transparent 50%),
+      linear-gradient(180deg, #120c1a 0%, var(--ink) 100%);
+  }
+
+  /* ---------- Screens ---------- */
+  #screens {
+    flex: 1; min-height: 0; display: flex; flex-direction: column;
+    overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+  }
+  .tab { display: none; flex-direction: column; gap: 12px; padding: 14px 14px 20px; }
+  .tab.active { display: flex; flex: 1 0 auto; }
+
+  /* ---------- Glass ---------- */
+  .glass {
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(14px) saturate(130%);
+    backdrop-filter: blur(14px) saturate(130%);
+    border: 1px solid var(--ember-dim);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  }
+  h2 {
+    font-size: 1.25rem; font-weight: 700; letter-spacing: 0.06em; color: var(--ember);
+    text-shadow: 0 0 14px rgba(212, 169, 71, 0.35); text-align: center; padding-top: 4px;
+  }
+
+  /* ---------- Fighters ---------- */
+  .fighter { --sp: 150px; position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px; }
+  .fighter .name { font-size: 1.05rem; font-weight: 600; letter-spacing: 0.05em; }
+
+  .portrait {
+    position: relative; width: var(--sp); height: var(--sp);
+    border-radius: 12px; border: 1px solid var(--ember-dim);
+    background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.55));
+  }
+  .shell {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.5s ease, filter 0.5s ease;
+  }
+  .shell.dead { opacity: 0.22; filter: grayscale(1); }
+  .shell.shake { animation: shake 0.3s ease; }
+  .sprite {
+    font-size: calc(var(--sp) * 0.55); line-height: 1;
+    animation: bob 2.6s ease-in-out infinite;
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.6));
+  }
+  .fighter.me .sprite { animation-delay: -1.2s; }
+
+  .hp { width: 100%; max-width: 260px; }
+  .hp-track {
+    height: 14px; border-radius: 10px;
+    background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .hp-fill { height: 100%; width: 100%; border-radius: 10px; transition: width 0.3s ease; }
+  .hp-fill.enemy { background: linear-gradient(90deg, #7a1a1a, #e04848); box-shadow: 0 0 10px rgba(255, 70, 70, 0.75); }
+  .hp-fill.player { background: linear-gradient(90deg, #2c6e42, #5fd183); box-shadow: 0 0 10px rgba(95, 209, 131, 0.7); }
+  .hp-text { margin-top: 5px; text-align: center; font-size: 0.8rem; color: var(--muted); letter-spacing: 0.08em; }
+
+  .gold {
+    position: absolute; top: 10px; right: 10px; padding: 4px 10px;
+    font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; color: var(--ember);
+    background: rgba(0, 0, 0, 0.45); border: 1px solid var(--ember-dim); border-radius: 999px;
+  }
+
+  .float {
+    position: absolute; top: 28%; transform: translateX(-50%);
+    font-size: 1.7rem; font-weight: 700; line-height: 1; color: #ff4d4d;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(255, 77, 77, 0.5);
+    pointer-events: none; animation: floatUp 1s ease-out forwards;
+  }
+  .float.heal { color: #6fe08c; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(111, 224, 140, 0.5); }
+
+  /* ---------- Log ---------- */
+  .log {
+    flex: 1; min-height: 84px; padding: 10px 12px; overflow-y: auto;
+    background: var(--glass-strong); font-size: 0.88rem; line-height: 1.5;
+  }
+  .log p { margin-bottom: 4px; color: var(--muted); }
+  .log p:last-child { margin-bottom: 0; color: var(--bone); }
+
+  /* ---------- Buttons ---------- */
+  .btn-row { display: flex; gap: 10px; }
+  .btn {
+    flex: 1; font-family: var(--font); font-size: 0.95rem; font-weight: 700; letter-spacing: 0.06em;
+    color: var(--bone); padding: 13px 14px; border-radius: 12px; cursor: pointer;
+    border: 1px solid var(--ember-dim);
+    background: linear-gradient(180deg, rgba(212, 169, 71, 0.18), rgba(212, 169, 71, 0.06));
+    transition: transform 0.12s ease, background 0.12s ease;
+  }
+  .btn:active { transform: scale(0.97); background: rgba(212, 169, 71, 0.28); }
+  .btn.attack {
+    border-color: rgba(194, 58, 58, 0.55);
+    background: linear-gradient(180deg, rgba(163, 45, 45, 0.5), rgba(163, 45, 45, 0.2));
+  }
+  .btn.attack:active { background: rgba(163, 45, 45, 0.6); }
+  .btn.small { flex: none; padding: 9px 12px; font-size: 0.8rem; white-space: nowrap; }
+  .tab > .btn { flex: none; width: 100%; }
+  .btn:disabled { opacity: 0.4; pointer-events: none; }
+  .btn:focus-visible, .nav-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+
+  /* ---------- Hero ---------- */
+  .panel { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .panel h3 { font-size: 1rem; font-weight: 600; letter-spacing: 0.06em; color: var(--ember); }
+  .stat {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .stat:last-child { border-bottom: none; }
+  .stat b { font-weight: 700; color: var(--ember); }
+
+  .slots { display: flex; gap: 12px; }
+  .slot {
+    flex: 1; min-height: 112px; padding: 10px 8px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    text-align: center; border-radius: 12px;
+    border: 1.5px dashed rgba(212, 169, 71, 0.4); background: rgba(0, 0, 0, 0.3);
+    color: var(--muted); font-size: 0.8rem;
+  }
+  .slot.filled { border-style: solid; border-color: var(--ember); box-shadow: 0 0 14px rgba(212, 169, 71, 0.25); }
+  .slot-label { font-size: 0.72rem; letter-spacing: 0.06em; }
+  .slot-name { font-size: 0.95rem; font-weight: 600; line-height: 1.25; }
+  .slot.filled .slot-name { color: var(--bone); }
+  .slot-bonus { font-size: 0.78rem; color: var(--ember); min-height: 1em; }
+
+  /* ---------- Shop / Altar ---------- */
+  .wallet { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; font-size: 0.9rem; }
+  .wallet b { color: var(--ember); }
+  .item { display: flex; align-items: center; gap: 12px; padding: 12px; }
+  .item .ico { font-size: 1.9rem; width: 44px; text-align: center; }
+  .item .info { flex: 1; min-width: 0; }
+  .item .t { font-weight: 600; letter-spacing: 0.04em; }
+  .item .p { font-size: 0.82rem; color: var(--ember); margin-top: 2px; }
+  .item .sub { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+  .altar-text { line-height: 1.6; text-align: center; font-size: 0.95rem; }
+  .altar-glyph { text-align: center; font-size: 3rem; filter: drop-shadow(0 0 14px rgba(212, 169, 71, 0.6)); }
+
+  /* ---------- Bottom nav ---------- */
+  #nav {
+    display: flex; padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+    background: var(--glass-strong); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+    border-top: 1px solid var(--ember-dim);
+  }
+  .nav-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 4px;
+    font-family: var(--font); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em;
+    color: var(--muted); background: none; border: none; border-radius: 10px; cursor: pointer;
+    position: relative; transition: color 0.15s ease;
+  }
+  .nav-btn .ico { font-size: 1.35rem; filter: grayscale(1) brightness(0.8); transition: filter 0.15s ease; }
+  .nav-btn.active { color: var(--ember); text-shadow: 0 0 10px rgba(212, 169, 71, 0.45); }
+  .nav-btn.active .ico { filter: none; }
+  .nav-btn.active::before {
+    content: ""; position: absolute; top: -7px; left: 25%; right: 25%; height: 2px;
+    border-radius: 2px; background: var(--ember); box-shadow: 0 0 10px var(--ember);
+  }
+
+  /* ---------- Floors, bosses, death screen ---------- */
+  .floor {
+    position: absolute; top: 10px; left: 10px; padding: 4px 10px;
+    font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; color: var(--bone);
+    background: rgba(0, 0, 0, 0.45); border: 1px solid var(--ember-dim); border-radius: 999px;
+  }
+  .sprite.boss { font-size: calc(var(--sp) * 0.82); filter: drop-shadow(0 0 14px rgba(224, 72, 72, 0.85)); }
+  .portrait.boss { border-color: #e04848; box-shadow: 0 0 18px rgba(224, 72, 72, 0.45); }
+
+  .btn-row {
+    position: sticky; bottom: 0; z-index: 5; padding: 10px 0 4px;
+    background: linear-gradient(180deg, rgba(11, 8, 16, 0), rgba(11, 8, 16, 0.92) 35%);
+  }
+
+  #death-screen {
+    position: fixed; inset: 0; z-index: 999; display: none;
+    flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    padding: 24px; text-align: center; background: rgba(0, 0, 0, 0.86);
+  }
+  #death-screen.show { display: flex; animation: fadeIn 0.4s ease; }
+  .death-title { font-size: 2rem; font-weight: 700; letter-spacing: 0.08em; color: #e04848; text-shadow: 0 0 22px rgba(224, 72, 72, 0.6); }
+  .death-stats { width: 100%; max-width: 280px; }
+  #death-screen .btn { flex: none; width: 100%; max-width: 280px; }
+
+  /* ---------- Animations ---------- */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); }
+  }
+  @keyframes floatUp {
+    from { opacity: 1; transform: translate(-50%, 0) scale(0.9); }
+    15% { transform: translate(-50%, -8px) scale(1.15); }
+    to { opacity: 0; transform: translate(-50%, -70px) scale(1); }
+  }
+
+  @media (max-height: 700px) { .fighter { --sp: 104px; gap: 6px; padding: 8px; } }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+    .sprite, .shell.shake { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <main id="screens">
+
+    <!-- ⚔️ БІЙ -->
+    <section class="tab active" id="tab-arena" role="tabpanel" aria-labelledby="nav-arena">
+      <div class="glass fighter">
+        <div class="floor" id="floor">Етаж 1</div>
+        <div class="portrait" id="enemy-portrait">
+          <div class="shell" id="enemy-shell"><div class="sprite" id="enemy-sprite">💀</div></div>
+        </div>
+        <div class="name" id="enemy-name">Скелет</div>
+        <div class="hp">
+          <div class="hp-track"><div class="hp-fill enemy" id="enemy-hp-fill"></div></div>
+          <div class="hp-text" id="enemy-hp-text">HP 50/50</div>
+        </div>
+      </div>
+
+      <div class="glass log" id="log" aria-live="polite"><p>Бій починається...</p></div>
+
+      <div class="glass fighter me">
+        <div class="gold js-gold">🪙 20</div>
+        <div class="portrait" id="player-portrait">
+          <div class="shell" id="player-shell"><div class="sprite">🧙‍♂️</div></div>
+        </div>
+        <div class="hp">
+          <div class="hp-track"><div class="hp-fill player" id="player-hp-fill"></div></div>
+          <div class="hp-text" id="player-hp-text">HP 100/100</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn attack" id="btn-attack" type="button">Атакувати</button>
+        <button class="btn" id="btn-potion" type="button">Зілля (0)</button>
+      </div>
+    </section>
+
+    <!-- 🛡️ ГЕРОЙ -->
+    <section class="tab" id="tab-hero" role="tabpanel" aria-labelledby="nav-hero">
+      <div class="glass panel">
+        <h3>Характеристики</h3>
+        <div>
+          <div class="stat"><span>Атака</span><b id="stat-attack">15</b></div>
+          <div class="stat"><span>Захист</span><b id="stat-defense">5</b></div>
+          <div class="stat"><span>Крит</span><b>10%</b></div>
+          <div class="stat"><span>Золото</span><b class="js-gold">🪙 20</b></div>
+        </div>
+      </div>
+
+      <div class="glass panel">
+        <h3>Екіпіровка</h3>
+        <div class="slots">
+          <div class="slot" id="slot-sword">
+            <span class="slot-label">Меч</span>
+            <span class="slot-name" id="sword-name">Порожньо</span>
+            <span class="slot-bonus" id="sword-bonus"></span>
+          </div>
+          <div class="slot" id="slot-armor">
+            <span class="slot-label">Броня</span>
+            <span class="slot-name" id="armor-name">Порожньо</span>
+            <span class="slot-bonus" id="armor-bonus"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass panel">
+        <h3>Інвентар</h3>
+        <div class="stat"><span>🧪 Зілля:</span><b><span class="js-potions">0</span> шт.</b></div>
+      </div>
+    </section>
+
+    <!-- 🧪 КРАМНИЦЯ -->
+    <section class="tab" id="tab-shop" role="tabpanel" aria-labelledby="nav-shop">
+      <h2>Крамниця</h2>
+
+      <div class="glass wallet"><span>Твоє золото</span><b class="js-gold">🪙 20</b></div>
+
+      <div class="glass item">
+        <div class="ico">🧪</div>
+        <div class="info">
+          <div class="t">Зілля HP</div>
+          <div class="p">10 золота</div>
+          <div class="sub">У тебе: <span class="js-potions">0</span> шт.</div>
+        </div>
+        <button class="btn small" id="btn-buy-potion" type="button">Купити Зілля</button>
+      </div>
+
+      <div class="glass item">
+        <div class="ico">⚔️</div>
+        <div class="info">
+          <div class="t" id="shop-sword-name">🗡️ Іржавий меч</div>
+          <div class="p" id="shop-sword-price">50 золота</div>
+          <div class="sub">+5 до атаки</div>
+        </div>
+        <button class="btn small" id="btn-buy-sword" type="button">Купити Меч</button>
+      </div>
+
+      <div class="glass item">
+        <div class="ico">🛡️</div>
+        <div class="info">
+          <div class="t" id="shop-armor-name">👕 Шкіряна броня</div>
+          <div class="p" id="shop-armor-price">30 золота</div>
+          <div class="sub">+3 до захисту</div>
+        </div>
+        <button class="btn small" id="btn-buy-armor" type="button">Купити Броню</button>
+      </div>
+    </section>
+
+    <!-- ✨ ВІВТАР -->
+    <section class="tab" id="tab-altar" role="tabpanel" aria-labelledby="nav-altar">
+      <h2>Вівтар Душ</h2>
+
+      <div class="glass panel">
+        <div class="altar-glyph">✨</div>
+        <p class="altar-text">Тут ти можеш витратити Душі на постійні покращення</p>
+      </div>
+
+      <div class="glass wallet"><span>Твоє золото</span><b class="js-gold">🪙 20</b></div>
+
+      <button class="btn attack" type="button">Продати душу за 10 золота</button>
+    </section>
+
+  </main>
+
+  <nav id="nav" role="tablist" aria-label="Головне меню">
+    <button class="nav-btn active" id="nav-arena" role="tab" aria-selected="true" data-tab="arena" type="button"><span class="ico">⚔️</span><span>Бій</span></button>
+    <button class="nav-btn" id="nav-hero" role="tab" aria-selected="false" data-tab="hero" type="button"><span class="ico">🛡️</span><span>Герой</span></button>
+    <button class="nav-btn" id="nav-shop" role="tab" aria-selected="false" data-tab="shop" type="button"><span class="ico">🧪</span><span>Крамниця</span></button>
+    <button class="nav-btn" id="nav-altar" role="tab" aria-selected="false" data-tab="altar" type="button"><span class="ico">✨</span><span>Вівтар</span></button>
+  </nav>
+</div>
+
+<div id="death-screen" role="alertdialog" aria-labelledby="death-title">
+  <div class="death-title" id="death-title">☠️ ТИ ПОМЕР</div>
+  <div class="glass panel death-stats">
+    <div class="stat"><span>Пройдено етажів</span><b id="death-floors">0</b></div>
+    <div class="stat"><span>Заробив золота</span><b id="death-gold">🪙 0</b></div>
+  </div>
+  <button class="btn attack" id="btn-respawn" type="button">Відродитися</button>
+</div>
+
+<script>
+  // ---------- Telegram ----------
+  const tg = window.Telegram && window.Telegram.WebApp;
+  if (tg) {
+    try { tg.ready(); tg.expand(); tg.setHeaderColor("#120c1a"); tg.setBackgroundColor("#0b0810"); } catch (e) {}
+  }
+
+  function haptic(kind, style) {
+    try {
+      const h = tg && tg.HapticFeedback;
+      if (!h) return;
+      if (kind === "impact") h.impactOccurred(style); else h.notificationOccurred(style);
+    } catch (e) {}
+  }
+
+  function notify(msg) {
+    try { if (tg && tg.showAlert) { tg.showAlert(msg); return; } } catch (e) {}
+    alert(msg);
+  }
+
+  // ---------- Tabs ----------
+  const navButtons = document.querySelectorAll(".nav-btn");
+  const tabs = document.querySelectorAll(".tab");
+  function showTab(name) {
+    tabs.forEach(t => t.classList.toggle("active", t.id === "tab-" + name));
+    navButtons.forEach(b => {
+      const on = b.dataset.tab === name;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    haptic("impact", "light");
+  }
+  navButtons.forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+
+  // ---------- Game data ----------
+  const POTION_PRICE = 10, POTION_HEAL = 30;
+  const SWORD_BONUS = 5, SWORD_PRICE_STEP = 50;
+  const ARMOR_BONUS = 3, ARMOR_PRICE_STEP = 40;
+  const BOSS_EVERY = 5, SCALE = 1.2;
+
+  const swords = ["Порожньо", "🗡️ Іржавий меч", "⚔️ Сталевий меч", "🗡️ Срібний клинок", "🔥 Вогняний меч"];
+  const armors = ["Порожньо", "👕 Шкіряна броня", "🛡️ Залізна броня", "⚔️ Лицарська броня"];
+  const MAX_SWORD = swords.length - 1;
+  const MAX_ARMOR = armors.length - 1;
+
+  const enemies = [
+    { name: "Слиз",   acc: "Слиза",   emoji: "🟢", maxHp: 30, attack: 5,  goldReward: 5 },
+    { name: "Скелет", acc: "Скелета", emoji: "💀", maxHp: 50, attack: 8,  goldReward: 10 },
+    { name: "Гоблін", acc: "Гобліна", emoji: "👹", maxHp: 70, attack: 12, goldReward: 15 },
+    { name: "Вовк",   acc: "Вовка",   emoji: "🐺", maxHp: 90, attack: 15, goldReward: 20 }
+  ];
+  const BOSS = { name: "Король Слизів", acc: "Короля Слизів", emoji: "👑", maxHp: 150, attack: 16, goldReward: 50 };
+
+  function buildEnemy(t, k, isBoss) {
+    const hp = Math.round(t.maxHp * k);
+    return {
+      name: t.name, acc: t.acc, emoji: t.emoji, hp: hp, maxHp: hp,
+      attack: Math.round(t.attack * k), goldReward: Math.round(t.goldReward * k), isBoss: isBoss
+    };
+  }
+
+  // Ворог залежить лише від етажу: кожен 5-й — бос, решта йдуть по колу з ростом ×1.2 за коло
+  function makeEnemy(floor) {
+    if (floor % BOSS_EVERY === 0) {
+      return buildEnemy(BOSS, Math.pow(SCALE, floor / BOSS_EVERY - 1), true);
+    }
+    const idx = floor - 1 - Math.floor((floor - 1) / BOSS_EVERY);
+    const lap = Math.floor(idx / enemies.length);
+    return buildEnemy(enemies[idx % enemies.length], Math.pow(SCALE, lap), false);
+  }
+
+  // ---------- Player & save ----------
+  const SAVE_KEY = "rpg_save";
+
+  function newPlayer() {
+    return {
+      hp: 100, maxHp: 100, gold: 20, attack: 15, defense: 5, potions: 0,
+      swordLevel: 0, swordPrice: 50, armorLevel: 0, armorPrice: 30,
+      floor: 1, runGold: 0
+    };
+  }
+
+  let player = newPlayer();
+  let enemy = makeEnemy(1);
+  let busy = false;
+  let playerDead = false;
+
+  function saveGame() {
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(player)); } catch (e) {}
+  }
+
+  function loadGame() {
+    player = newPlayer();
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (!saved || typeof saved !== "object") return;
+
+      const base = newPlayer();
+      Object.keys(base).forEach(k => { if (Number.isFinite(saved[k])) base[k] = saved[k]; });
+
+      base.swordLevel = Math.max(0, Math.min(MAX_SWORD, Math.floor(base.swordLevel)));
+      base.armorLevel = Math.max(0, Math.min(MAX_ARMOR, Math.floor(base.armorLevel)));
+      base.potions = Math.max(0, Math.floor(base.potions));
+      base.floor = Math.max(1, Math.floor(base.floor));
+      base.gold = Math.max(0, base.gold);
+      base.runGold = Math.max(0, base.runGold);
+      base.hp = Math.max(0, Math.min(base.hp, base.maxHp));
+      player = base;
+    } catch (e) { player = newPlayer(); }
+  }
+
+  // ---------- DOM ----------
+  const $ = id => document.getElementById(id);
+  const ui = {
+    floor: $("floor"),
+    enemySprite: $("enemy-sprite"), enemyShell: $("enemy-shell"), enemyPortrait: $("enemy-portrait"),
+    enemyName: $("enemy-name"), enemyFill: $("enemy-hp-fill"), enemyText: $("enemy-hp-text"),
+    playerShell: $("player-shell"), playerPortrait: $("player-portrait"),
+    playerFill: $("player-hp-fill"), playerText: $("player-hp-text"),
+    log: $("log"), statAttack: $("stat-attack"), statDefense: $("stat-defense"),
+    swordName: $("sword-name"), swordBonus: $("sword-bonus"), slotSword: $("slot-sword"),
+    armorName: $("armor-name"), armorBonus: $("armor-bonus"), slotArmor: $("slot-armor"),
+    shopSwordName: $("shop-sword-name"), shopSwordPrice: $("shop-sword-price"),
+    shopArmorName: $("shop-armor-name"), shopArmorPrice: $("shop-armor-price"),
+    btnAttack: $("btn-attack"), btnPotion: $("btn-potion"),
+    btnBuyPotion: $("btn-buy-potion"), btnBuySword: $("btn-buy-sword"), btnBuyArmor: $("btn-buy-armor"),
+    death: $("death-screen"), deathFloors: $("death-floors"), deathGold: $("death-gold"), btnRespawn: $("btn-respawn")
+  };
+
+  const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  const pct = (hp, max) => Math.max(0, Math.min(100, (hp / max) * 100));
+
+  function addLog(text) {
+    const p = document.createElement("p");
+    p.textContent = text;
+    ui.log.appendChild(p);
+    while (ui.log.children.length > 40) ui.log.removeChild(ui.log.firstChild);
+    ui.log.scrollTop = ui.log.scrollHeight;
+  }
+
+  function shake(el) {
+    el.classList.remove("shake");
+    void el.offsetWidth;
+    el.classList.add("shake");
+    setTimeout(() => el.classList.remove("shake"), 300);
+  }
+
+  function floatText(portrait, text, extraClass) {
+    const s = document.createElement("span");
+    s.className = "float" + (extraClass ? " " + extraClass : "");
+    s.textContent = text;
+    s.style.left = (35 + Math.random() * 30) + "%";
+    portrait.appendChild(s);
+    setTimeout(() => s.remove(), 1000);
+  }
+
+  // ---------- UI update (єдине джерело правди) ----------
+  function updateUI() {
+    // Бій
+    ui.floor.textContent = "Етаж " + player.floor;
+    ui.enemySprite.textContent = enemy.emoji;
+    ui.enemySprite.classList.toggle("boss", enemy.isBoss);
+    ui.enemyPortrait.classList.toggle("boss", enemy.isBoss);
+    ui.enemyName.textContent = enemy.name;
+    ui.enemyFill.style.width = pct(enemy.hp, enemy.maxHp) + "%";
+    ui.enemyText.textContent = "HP " + Math.max(0, enemy.hp) + "/" + enemy.maxHp;
+    ui.playerFill.style.width = pct(player.hp, player.maxHp) + "%";
+    ui.playerText.textContent = "HP " + Math.max(0, player.hp) + "/" + player.maxHp;
+
+    // Золото та зілля на всіх вкладках
+    document.querySelectorAll(".js-gold").forEach(el => { el.textContent = "🪙 " + player.gold; });
+    document.querySelectorAll(".js-potions").forEach(el => { el.textContent = player.potions; });
+
+    // Герой
+    ui.statAttack.textContent = player.attack;
+    ui.statDefense.textContent = player.defense;
+    const sl = player.swordLevel, al = player.armorLevel;
+    ui.swordName.textContent = swords[sl];
+    ui.swordBonus.textContent = sl > 0 ? "+" + (sl * SWORD_BONUS) + " до атаки" : "";
+    ui.slotSword.classList.toggle("filled", sl > 0);
+    ui.armorName.textContent = armors[al];
+    ui.armorBonus.textContent = al > 0 ? "+" + (al * ARMOR_BONUS) + " до захисту" : "";
+    ui.slotArmor.classList.toggle("filled", al > 0);
+
+    // Крамниця: наступний меч і наступна броня
+    const swordMax = sl >= MAX_SWORD, armorMax = al >= MAX_ARMOR;
+    ui.shopSwordName.textContent = swordMax ? "Меч вдосконалено" : swords[sl + 1];
+    ui.shopSwordPrice.textContent = swordMax ? "Максимальний рівень" : player.swordPrice + " золота";
+    ui.btnBuySword.disabled = swordMax;
+    ui.shopArmorName.textContent = armorMax ? "Броню вдосконалено" : armors[al + 1];
+    ui.shopArmorPrice.textContent = armorMax ? "Максимальний рівень" : player.armorPrice + " золота";
+    ui.btnBuyArmor.disabled = armorMax;
+
+    // Кнопки бою
+    ui.btnAttack.disabled = busy || playerDead;
+    ui.btnPotion.disabled = playerDead;
+    ui.btnPotion.textContent = "Зілля (" + player.potions + ")";
+  }
+
+  // ---------- Combat ----------
+  function playerAttack() {
+    if (busy || playerDead) return;
+    busy = true;
+
+    const dmg = Math.max(1, rand(player.attack - 5, player.attack + 5));
+    enemy.hp = Math.max(0, enemy.hp - dmg);
+
+    shake(ui.enemyShell);
+    floatText(ui.enemyPortrait, "-" + dmg);
+    addLog("Ти вдарив " + enemy.acc + " на " + dmg + " шкоди");
+    haptic("impact", "medium");
+
+    if (enemy.hp <= 0) onEnemyDefeated();
+    else setTimeout(enemyAttack, 500);
+    updateUI();
+    saveGame();
+  }
+
+  function enemyAttack() {
+    const incomingDamage = Math.max(1, enemy.attack - player.defense);
+    const blocked = enemy.attack - incomingDamage;
+    player.hp = Math.max(0, player.hp - incomingDamage);
+
+    shake(ui.playerShell);
+    floatText(ui.playerPortrait, "-" + incomingDamage);
+    addLog(enemy.name + " вдарив тебе на " + incomingDamage + " шкоди (заблоковано " + blocked + ")");
+    haptic("impact", "light");
+
+    if (player.hp <= 0) {
+      addLog("Ти помер...");
+      haptic("notify", "error");
+      showDeath();
+    } else {
+      busy = false;
+    }
+    updateUI();
+    saveGame();
+  }
+
+  function onEnemyDefeated() {
+    const reward = enemy.goldReward;
+    player.gold += reward;
+    player.runGold += reward;
+    player.floor += 1;
+    saveGame();
+
+    ui.enemyShell.classList.add("dead");
+    addLog("Перемога! Ти отримав " + reward + " золота");
+    haptic("notify", "success");
+
+    setTimeout(() => {
+      enemy = makeEnemy(player.floor);
+      ui.enemyShell.classList.remove("dead");
+      addLog(enemy.isBoss ? "⚠️ З’являється бос: " + enemy.name + "!" : "З’являється " + enemy.name + "...");
+      busy = false;
+      updateUI();
+    }, 1500);
+  }
+
+  // ---------- Death screen ----------
+  function showDeath() {
+    playerDead = true;
+    ui.deathFloors.textContent = Math.max(0, player.floor - 1);
+    ui.deathGold.textContent = "🪙 " + player.runGold;
+    ui.death.classList.add("show");
+    updateUI();
+  }
+
+  function respawn() {
+    player.hp = player.maxHp;
+    player.gold = 0;
+    player.floor = 1;
+    player.runGold = 0;
+    playerDead = false;
+    busy = false;
+    enemy = makeEnemy(player.floor);
+    ui.death.classList.remove("show");
+    ui.enemyShell.classList.remove("dead");
+    ui.log.innerHTML = "";
+    addLog("Бій починається...");
+    updateUI();
+    saveGame();
+  }
+
+  // ---------- Potion ----------
+  function usePotion() {
+    if (playerDead) return;
+    if (player.potions === 0) {
+      addLog("У тебе немає зілль! Купи їх у крамниці");
+      haptic("notify", "warning");
+      return;
+    }
+    if (player.hp >= player.maxHp) {
+      addLog("У тебе вже повне здоров’я");
+      return;
+    }
+    const healed = Math.min(POTION_HEAL, player.maxHp - player.hp);
+    player.potions -= 1;
+    player.hp += healed;
+    floatText(ui.playerPortrait, "+" + healed, "heal");
+    addLog("Ти випив зілля і відновив " + healed + " HP");
+    haptic("notify", "success");
+    updateUI();
+    saveGame();
+  }
+
+  // ---------- Shop ----------
+  function buyPotion() {
+    if (player.gold < POTION_PRICE) { notify("Недостатньо золота!"); return; }
+    player.gold -= POTION_PRICE;
+    player.potions += 1;
+    haptic("notify", "success");
+    updateUI();
+    saveGame();
+  }
+
+  function buySword() {
+    if (player.swordLevel >= MAX_SWORD) { notify("Меч вже досяг максимального рівня!"); return; }
+    if (player.gold < player.swordPrice) { notify("Недостатньо золота!"); return; }
+    player.gold -= player.swordPrice;
+    player.attack += SWORD_BONUS;
+    player.swordLevel += 1;
+    player.swordPrice += SWORD_PRICE_STEP;
+    haptic("notify", "success");
+    updateUI();
+    saveGame();
+    notify("Меч куплено! Атака зросла!");
+  }
+
+  function buyArmor() {
+    if (player.armorLevel >= MAX_ARMOR) { notify("Броня вже досягла максимального рівня!"); return; }
+    if (player.gold < player.armorPrice) { notify("Недостатньо золота!"); return; }
+    player.gold -= player.armorPrice;
+    player.defense += ARMOR_BONUS;
+    player.armorLevel += 1;
+    player.armorPrice += ARMOR_PRICE_STEP;
+    haptic("notify", "success");
+    updateUI();
+    saveGame();
+    notify("Броню куплено! Захист зріс!");
+  }
+
+  // ---------- Init ----------
+  ui.btnAttack.addEventListener("click", playerAttack);
+  ui.btnPotion.addEventListener("click", usePotion);
+  ui.btnBuyPotion.addEventListener("click", buyPotion);
+  ui.btnBuySword.addEventListener("click", buySword);
+  ui.btnBuyArmor.addEventListener("click", buyArmor);
+  ui.btnRespawn.addEventListener("click", respawn);
+
+  loadGame();
+  enemy = makeEnemy(player.floor);
+  updateUI();
+  if (player.hp <= 0) showDeath();   // сторінку оновили, поки гравець був мертвий
+</script>
+</body>
+</html>
