@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Темне Королівство</title>
+<title>Echoes of the Abyss</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,30 +16,46 @@
     --bone: #e9dfc8;
     --muted: #9a8f7c;
     --glass: rgba(255, 255, 255, 0.055);
-    --glass-strong: rgba(18, 12, 26, 0.72);
+    --glass-strong: rgba(18, 12, 26, 0.85);
     --radius: 14px;
     --font: "Cinzel", "Georgia", "Times New Roman", serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  
+  /* Жорсткий Flexbox для мобільної верстки */
   html, body {
-    height: 100%; height: 100dvh; overflow: hidden; overscroll-behavior: none;
-    background: var(--ink); color: var(--bone); font-family: var(--font);
-    -webkit-user-select: none; user-select: none;
+    height: 100%;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    overscroll-behavior: none;
+    background: var(--ink);
+    color: var(--bone);
+    font-family: var(--font);
+    -webkit-user-select: none;
+    user-select: none;
+    transition: background 0.8s ease;
   }
+
   #app {
-    height: 100vh; height: 100dvh; height: var(--tg-viewport-stable-height, 100dvh);
-    display: flex; flex-direction: column;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     padding-top: env(safe-area-inset-top, 0px);
-    background:
-      radial-gradient(ellipse at 50% 0%, rgba(120, 40, 60, 0.35), transparent 55%),
-      radial-gradient(ellipse at 50% 100%, rgba(212, 169, 71, 0.10), transparent 50%),
-      linear-gradient(180deg, #120c1a 0%, var(--ink) 100%);
   }
 
   /* ---------- Screens ---------- */
   #screens {
-    flex: 1; min-height: 0; display: flex; flex-direction: column;
-    overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
   .tab { display: none; flex-direction: column; gap: 12px; padding: 14px 14px 20px; }
   .tab.active { display: flex; flex: 1 0 auto; }
@@ -66,6 +82,8 @@
     position: relative; width: var(--sp); height: var(--sp);
     border-radius: 12px; border: 1px solid var(--ember-dim);
     background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.55));
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
   }
   .shell {
     width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
@@ -79,6 +97,15 @@
     filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.6));
   }
   .fighter.me .sprite { animation-delay: -1.2s; }
+
+  /* Піксель-арт спрайт ворога */
+  .enemy-sprite {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    animation: bob 2.6s ease-in-out infinite;
+  }
 
   .hp { width: 100%; max-width: 260px; }
   .hp-track {
@@ -100,20 +127,30 @@
     position: absolute; top: 28%; transform: translateX(-50%);
     font-size: 1.7rem; font-weight: 700; line-height: 1; color: #ff4d4d;
     text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(255, 77, 77, 0.5);
-    pointer-events: none; animation: floatUp 1s ease-out forwards;
+    pointer-events: none; animation: floatUp 1s ease-out forwards; z-index: 10;
   }
   .float.heal { color: #6fe08c; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(111, 224, 140, 0.5); }
 
   /* ---------- Log ---------- */
   .log {
-    flex: 1; min-height: 84px; padding: 10px 12px; overflow-y: auto;
-    background: var(--glass-strong); font-size: 0.88rem; line-height: 1.5;
+    max-height: 150px;
+    min-height: 80px;
+    padding: 10px 12px;
+    overflow-y: auto;
+    background: var(--glass-strong);
+    font-size: 0.85rem;
+    line-height: 1.4;
   }
   .log p { margin-bottom: 4px; color: var(--muted); }
   .log p:last-child { margin-bottom: 0; color: var(--bone); }
 
   /* ---------- Buttons ---------- */
-  .btn-row { display: flex; gap: 10px; }
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+    padding: 6px 0;
+  }
   .btn {
     flex: 1; font-family: var(--font); font-size: 0.95rem; font-weight: 700; letter-spacing: 0.06em;
     color: var(--bone); padding: 13px 14px; border-radius: 12px; cursor: pointer;
@@ -168,11 +205,16 @@
   .altar-text { line-height: 1.6; text-align: center; font-size: 0.95rem; }
   .altar-glyph { text-align: center; font-size: 3rem; filter: drop-shadow(0 0 14px rgba(212, 169, 71, 0.6)); }
 
-  /* ---------- Bottom nav ---------- */
+  /* ---------- Bottom nav (Жорсткий flex-shrink: 0) ---------- */
   #nav {
-    display: flex; padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
-    background: var(--glass-strong); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+    flex-shrink: 0;
+    display: flex;
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+    background: var(--glass-strong);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
     border-top: 1px solid var(--ember-dim);
+    z-index: 100;
   }
   .nav-btn {
     flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 4px;
@@ -191,16 +233,12 @@
   /* ---------- Floors, bosses, death screen ---------- */
   .floor {
     position: absolute; top: 10px; left: 10px; padding: 4px 10px;
-    font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; color: var(--bone);
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; color: var(--bone);
     background: rgba(0, 0, 0, 0.45); border: 1px solid var(--ember-dim); border-radius: 999px;
+    z-index: 5;
   }
   .sprite.boss { font-size: calc(var(--sp) * 0.82); filter: drop-shadow(0 0 14px rgba(224, 72, 72, 0.85)); }
-  .portrait.boss { border-color: #e04848; box-shadow: 0 0 18px rgba(224, 72, 72, 0.45); }
-
-  .btn-row {
-    position: sticky; bottom: 0; z-index: 5; padding: 10px 0 4px;
-    background: linear-gradient(180deg, rgba(11, 8, 16, 0), rgba(11, 8, 16, 0.92) 35%);
-  }
+  .portrait.boss { border-color: #e04848; box-shadow: 0 0 18px rgba(224, 72, 72, 0.45); transform: scale(1.05); }
 
   #death-screen {
     position: fixed; inset: 0; z-index: 999; display: none;
@@ -225,10 +263,10 @@
     to { opacity: 0; transform: translate(-50%, -70px) scale(1); }
   }
 
-  @media (max-height: 700px) { .fighter { --sp: 104px; gap: 6px; padding: 8px; } }
+  @media (max-height: 700px) { .fighter { --sp: 110px; gap: 6px; padding: 8px; } .enemy-sprite { width: 110px; height: 110px; } }
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; }
-    .sprite, .shell.shake { animation: none; }
+    .sprite, .enemy-sprite, .shell.shake { animation: none; }
   }
 </style>
 </head>
@@ -239,14 +277,14 @@
     <!-- ⚔️ БІЙ -->
     <section class="tab active" id="tab-arena" role="tabpanel" aria-labelledby="nav-arena">
       <div class="glass fighter">
-        <div class="floor" id="floor">Етаж 1</div>
+        <div class="floor" id="floor">Етаж 1 | Руїни</div>
         <div class="portrait" id="enemy-portrait">
-          <div class="shell" id="enemy-shell"><div class="sprite" id="enemy-sprite">💀</div></div>
+          <div class="shell" id="enemy-shell"><div class="sprite" id="enemy-sprite">🟢</div></div>
         </div>
-        <div class="name" id="enemy-name">Скелет</div>
+        <div class="name" id="enemy-name">Слиз</div>
         <div class="hp">
           <div class="hp-track"><div class="hp-fill enemy" id="enemy-hp-fill"></div></div>
-          <div class="hp-text" id="enemy-hp-text">HP 50/50</div>
+          <div class="hp-text" id="enemy-hp-text">HP 30/30</div>
         </div>
       </div>
 
@@ -407,45 +445,101 @@
   }
   navButtons.forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
 
-  // ---------- Game data ----------
+  // ---------- Game data & Biomes ----------
   const POTION_PRICE = 10, POTION_HEAL = 30;
   const SWORD_BONUS = 5, SWORD_PRICE_STEP = 50;
   const ARMOR_BONUS = 3, ARMOR_PRICE_STEP = 40;
-  const BOSS_EVERY = 5, SCALE = 1.2;
 
   const swords = ["Порожньо", "🗡️ Іржавий меч", "⚔️ Сталевий меч", "🗡️ Срібний клинок", "🔥 Вогняний меч"];
   const armors = ["Порожньо", "👕 Шкіряна броня", "🛡️ Залізна броня", "⚔️ Лицарська броня"];
   const MAX_SWORD = swords.length - 1;
   const MAX_ARMOR = armors.length - 1;
 
-  const enemies = [
-    { name: "Слиз",   acc: "Слиза",   emoji: "🟢", maxHp: 30, attack: 5,  goldReward: 5 },
-    { name: "Скелет", acc: "Скелета", emoji: "💀", maxHp: 50, attack: 8,  goldReward: 10 },
-    { name: "Гоблін", acc: "Гобліна", emoji: "👹", maxHp: 70, attack: 12, goldReward: 15 },
-    { name: "Вовк",   acc: "Вовка",   emoji: "🐺", maxHp: 90, attack: 15, goldReward: 20 }
+  // Система зон (Біомів)
+  const ZONES = [
+    { min: 1, max: 15, name: "Руїни", bgColor: "#120c1a", enemies: [
+      { name: "Слиз", acc: "Слиза", image: "img/slime.png", maxHp: 30, attack: 5, goldReward: 5 },
+      { name: "Скелет", acc: "Скелета", emoji: "💀", maxHp: 50, attack: 8, goldReward: 10 },
+      { name: "Гоблін", acc: "Гобліна", emoji: "👹", maxHp: 70, attack: 12, goldReward: 15 }
+    ]},
+    { min: 16, max: 30, name: "Шахти", bgColor: "#150f0a", enemies: [
+      { name: "Шахтар-Зомбі", acc: "Зомбі", emoji: "🧟", maxHp: 110, attack: 18, goldReward: 25 },
+      { name: "Печерний Павук", acc: "Павука", emoji: "🕷️", maxHp: 95, attack: 22, goldReward: 28 },
+      { name: "Крот-Мутант", acc: "Крота", emoji: "🐀", maxHp: 130, attack: 20, goldReward: 30 }
+    ]},
+    { min: 31, max: 45, name: "Печери", bgColor: "#091216", enemies: [
+      { name: "Кажанець", acc: "Кажанця", emoji: "🦇", maxHp: 160, attack: 28, goldReward: 40 },
+      { name: "Печерний Троль", acc: "Троля", emoji: "🧌", maxHp: 210, attack: 35, goldReward: 50 },
+      { name: "Скелет-Страж", acc: "Стража", emoji: "🛡️", maxHp: 190, attack: 32, goldReward: 45 }
+    ]},
+    { min: 46, max: 60, name: "Крига", bgColor: "#0a151a", enemies: [
+      { name: "Крижаний Дух", acc: "Духа", emoji: "👻", maxHp: 250, attack: 42, goldReward: 65 },
+      { name: "Сніговий Вовк", acc: "Вовка", emoji: "🐺", maxHp: 280, attack: 48, goldReward: 75 },
+      { name: "Єті", acc: "Єті", emoji: "🦍", maxHp: 340, attack: 55, goldReward: 90 }
+    ]},
+    { min: 61, max: 75, name: "Пекло", bgColor: "#1a0b0b", enemies: [
+      { name: "Бес", acc: "Беса", emoji: "👺", maxHp: 400, attack: 65, goldReward: 110 },
+      { name: "Лавовий Голем", acc: "Голема", emoji: "🌋", maxHp: 480, attack: 75, goldReward: 135 },
+      { name: "Демон", acc: "Демона", emoji: "👿", maxHp: 550, attack: 85, goldReward: 160 }
+    ]},
+    { min: 76, max: 90, name: "Кузні", bgColor: "#1c1208", enemies: [
+      { name: "Вогняний Механізм", acc: "Механізма", emoji: "⚙️", maxHp: 650, attack: 95, goldReward: 190 },
+      { name: "Біомеханічний Вартовий", acc: "Вартового", emoji: "🤖", maxHp: 750, attack: 110, goldReward: 220 },
+      { name: "Володар Ковадла", acc: "Володаря", emoji: "⚒️", maxHp: 850, attack: 125, goldReward: 260 }
+    ]},
+    { min: 91, max: 100, name: "Храм", bgColor: "#14101c", enemies: [
+      { name: "Фанатик", acc: "Фанатика", emoji: "🧙", maxHp: 980, attack: 140, goldReward: 300 },
+      { name: "Храмовий Страж", acc: "Стража", emoji: "🗿", maxHp: 1100, attack: 160, goldReward: 350 },
+      { name: "Падший Жрець", acc: "Жреця", emoji: "👁️", maxHp: 1250, attack: 180, goldReward: 410 }
+    ]},
+    { min: 101, max: 9999, name: "Порожнеча", bgColor: "#08060c", enemies: [
+      { name: "Тінь Порожнечі", acc: "Тіні", emoji: "👥", maxHp: 1500, attack: 210, goldReward: 500 },
+      { name: "Абстрактний Жах", acc: "Жаху", emoji: "🌀", maxHp: 1800, attack: 250, goldReward: 620 },
+      { name: "Ехо Безодні", acc: "Еха", emoji: "🌌", maxHp: 2200, attack: 300, goldReward: 750 }
+    ]}
   ];
-  const BOSS = { name: "Король Слизів", acc: "Короля Слизів", emoji: "👑", maxHp: 150, attack: 16, goldReward: 50 };
 
-  function buildEnemy(t, k, isBoss) {
-    const hp = Math.round(t.maxHp * k);
-    return {
-      name: t.name, acc: t.acc, emoji: t.emoji, hp: hp, maxHp: hp,
-      attack: Math.round(t.attack * k), goldReward: Math.round(t.goldReward * k), isBoss: isBoss
-    };
+  function getZone(floor) {
+    return ZONES.find(z => floor >= z.min && floor <= z.max) || ZONES[ZONES.length - 1];
   }
 
-  // Ворог залежить лише від етажу: кожен 5-й — бос, решта йдуть по колу з ростом ×1.2 за коло
   function makeEnemy(floor) {
-    if (floor % BOSS_EVERY === 0) {
-      return buildEnemy(BOSS, Math.pow(SCALE, floor / BOSS_EVERY - 1), true);
+    const zone = getZone(floor);
+    const isBoss = (floor % 10 === 0);
+    
+    let base;
+    if (isBoss) {
+      // Масштабування для боса кожні 10 поверхів
+      const bossMultiplier = Math.pow(1.35, Math.floor(floor / 10) - 1);
+      base = {
+        name: `Бос Етажу ${floor}`,
+        acc: `Боса Етажу ${floor}`,
+        emoji: "👑",
+        maxHp: Math.round(500 * bossMultiplier),
+        attack: Math.round(35 * bossMultiplier),
+        goldReward: Math.round(150 * bossMultiplier),
+        isBoss: true
+      };
+    } else {
+      // Звичайний ворог із пулу поточної зони + загальне масштабування поверху
+      const template = zone.enemies[(floor - 1) % zone.enemies.length];
+      const scale = Math.pow(1.12, floor - 1);
+      base = {
+        name: template.name,
+        acc: template.acc,
+        emoji: template.emoji,
+        image: template.image || null,
+        maxHp: Math.round(template.maxHp * scale),
+        attack: Math.round(template.attack * scale),
+        goldReward: Math.round(template.goldReward * scale),
+        isBoss: false
+      };
     }
-    const idx = floor - 1 - Math.floor((floor - 1) / BOSS_EVERY);
-    const lap = Math.floor(idx / enemies.length);
-    return buildEnemy(enemies[idx % enemies.length], Math.pow(SCALE, lap), false);
+    return { ...base, hp: base.maxHp };
   }
 
   // ---------- Player & save ----------
-  const SAVE_KEY = "rpg_save";
+  const SAVE_KEY = "rpg_save_abyss_v2";
 
   function newPlayer() {
     return {
@@ -531,11 +625,25 @@
     setTimeout(() => s.remove(), 1000);
   }
 
-  // ---------- UI update (єдине джерело правди) ----------
+  // ---------- UI update ----------
   function updateUI() {
-    // Бій
-    ui.floor.textContent = "Етаж " + player.floor;
-    ui.enemySprite.textContent = enemy.emoji;
+    const zone = getZone(player.floor);
+    document.body.style.background = zone.bgColor;
+
+    ui.floor.textContent = `Етаж ${player.floor} | ${zone.name}`;
+    
+    // Рендер спрайта ворога (картинка або емодзі)
+    if (enemy.image) {
+      ui.enemyPortrait.innerHTML = `<div class="shell" id="enemy-shell"><img src="${enemy.image}" class="enemy-sprite"></div>`;
+      // Оновлюємо посилання на shell
+      ui.enemyShell = $("enemy-shell");
+      ui.enemySprite = document.querySelector(".enemy-sprite");
+    } else {
+      ui.enemyPortrait.innerHTML = `<div class="shell" id="enemy-shell"><div class="sprite" id="enemy-sprite">${enemy.emoji}</div></div>`;
+      ui.enemyShell = $("enemy-shell");
+      ui.enemySprite = $("enemy-sprite");
+    }
+
     ui.enemySprite.classList.toggle("boss", enemy.isBoss);
     ui.enemyPortrait.classList.toggle("boss", enemy.isBoss);
     ui.enemyName.textContent = enemy.name;
@@ -544,7 +652,7 @@
     ui.playerFill.style.width = pct(player.hp, player.maxHp) + "%";
     ui.playerText.textContent = "HP " + Math.max(0, player.hp) + "/" + player.maxHp;
 
-    // Золото та зілля на всіх вкладках
+    // Золото та зілля
     document.querySelectorAll(".js-gold").forEach(el => { el.textContent = "🪙 " + player.gold; });
     document.querySelectorAll(".js-potions").forEach(el => { el.textContent = player.potions; });
 
@@ -559,7 +667,7 @@
     ui.armorBonus.textContent = al > 0 ? "+" + (al * ARMOR_BONUS) + " до захисту" : "";
     ui.slotArmor.classList.toggle("filled", al > 0);
 
-    // Крамниця: наступний меч і наступна броня
+    // Крамниця
     const swordMax = sl >= MAX_SWORD, armorMax = al >= MAX_ARMOR;
     ui.shopSwordName.textContent = swordMax ? "Меч вдосконалено" : swords[sl + 1];
     ui.shopSwordPrice.textContent = swordMax ? "Максимальний рівень" : player.swordPrice + " золота";
@@ -628,7 +736,7 @@
     setTimeout(() => {
       enemy = makeEnemy(player.floor);
       ui.enemyShell.classList.remove("dead");
-      addLog(enemy.isBoss ? "⚠️ З’являється бос: " + enemy.name + "!" : "З’являється " + enemy.name + "...");
+      addLog(enemy.isBoss ? "⚠️ УВАГА! На вас нападає БОС: " + enemy.name + "!" : "З’являється " + enemy.name + "...");
       busy = false;
       updateUI();
     }, 1500);
@@ -659,7 +767,7 @@
     saveGame();
   }
 
-  // ---------- Potion ----------
+  // ---------- Potion & Shop ----------
   function usePotion() {
     if (playerDead) return;
     if (player.potions === 0) {
@@ -681,7 +789,6 @@
     saveGame();
   }
 
-  // ---------- Shop ----------
   function buyPotion() {
     if (player.gold < POTION_PRICE) { notify("Недостатньо золота!"); return; }
     player.gold -= POTION_PRICE;
@@ -728,7 +835,7 @@
   loadGame();
   enemy = makeEnemy(player.floor);
   updateUI();
-  if (player.hp <= 0) showDeath();   // сторінку оновили, поки гравець був мертвий
+  if (player.hp <= 0) showDeath();
 </script>
 </body>
-</html>
+      </html>
