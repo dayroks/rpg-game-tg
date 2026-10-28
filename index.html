@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!    <!DOCTYPE html>
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
@@ -22,7 +22,6 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   
-  /* Жорсткий Flexbox для мобільної верстки */
   html, body {
     height: 100%;
     height: 100dvh;
@@ -46,7 +45,6 @@
     padding-top: env(safe-area-inset-top, 0px);
   }
 
-  /* ---------- Screens ---------- */
   #screens {
     flex: 1;
     min-height: 0;
@@ -60,7 +58,6 @@
   .tab { display: none; flex-direction: column; gap: 12px; padding: 14px 14px 20px; }
   .tab.active { display: flex; flex: 1 0 auto; }
 
-  /* ---------- Glass ---------- */
   .glass {
     background: var(--glass);
     -webkit-backdrop-filter: blur(14px) saturate(130%);
@@ -74,7 +71,6 @@
     text-shadow: 0 0 14px rgba(212, 169, 71, 0.35); text-align: center; padding-top: 4px;
   }
 
-  /* ---------- Fighters ---------- */
   .fighter { --sp: 150px; position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px; }
   .fighter .name { font-size: 1.05rem; font-weight: 600; letter-spacing: 0.05em; }
 
@@ -98,7 +94,6 @@
   }
   .fighter.me .sprite { animation-delay: -1.2s; }
 
-  /* Піксель-арт спрайт ворога */
   .enemy-sprite {
     width: 150px;
     height: 150px;
@@ -131,7 +126,6 @@
   }
   .float.heal { color: #6fe08c; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(111, 224, 140, 0.5); }
 
-  /* ---------- Log ---------- */
   .log {
     max-height: 150px;
     min-height: 80px;
@@ -144,7 +138,6 @@
   .log p { margin-bottom: 4px; color: var(--muted); }
   .log p:last-child { margin-bottom: 0; color: var(--bone); }
 
-  /* ---------- Buttons ---------- */
   .btn-row {
     display: flex;
     gap: 10px;
@@ -169,7 +162,6 @@
   .btn:disabled { opacity: 0.4; pointer-events: none; }
   .btn:focus-visible, .nav-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
 
-  /* ---------- Hero ---------- */
   .panel { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
   .panel h3 { font-size: 1rem; font-weight: 600; letter-spacing: 0.06em; color: var(--ember); }
   .stat {
@@ -193,7 +185,6 @@
   .slot.filled .slot-name { color: var(--bone); }
   .slot-bonus { font-size: 0.78rem; color: var(--ember); min-height: 1em; }
 
-  /* ---------- Shop / Altar ---------- */
   .wallet { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; font-size: 0.9rem; }
   .wallet b { color: var(--ember); }
   .item { display: flex; align-items: center; gap: 12px; padding: 12px; }
@@ -205,7 +196,6 @@
   .altar-text { line-height: 1.6; text-align: center; font-size: 0.95rem; }
   .altar-glyph { text-align: center; font-size: 3rem; filter: drop-shadow(0 0 14px rgba(212, 169, 71, 0.6)); }
 
-  /* ---------- Bottom nav (Жорсткий flex-shrink: 0) ---------- */
   #nav {
     flex-shrink: 0;
     display: flex;
@@ -230,7 +220,6 @@
     border-radius: 2px; background: var(--ember); box-shadow: 0 0 10px var(--ember);
   }
 
-  /* ---------- Floors, bosses, death screen ---------- */
   .floor {
     position: absolute; top: 10px; left: 10px; padding: 4px 10px;
     font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; color: var(--bone);
@@ -250,7 +239,6 @@
   .death-stats { width: 100%; max-width: 280px; }
   #death-screen .btn { flex: none; width: 100%; max-width: 280px; }
 
-  /* ---------- Animations ---------- */
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
   @keyframes shake {
@@ -350,8 +338,8 @@
       <div class="glass item">
         <div class="ico">🧪</div>
         <div class="info">
-          <div class="t">Зілля HP</div>
-          <div class="p">10 золота</div>
+          <div class="t">Зілля HP (50% макс. HP)</div>
+          <div class="p" id="shop-potion-price">12 золота</div>
           <div class="sub">У тебе: <span class="js-potions">0</span> шт.</div>
         </div>
         <button class="btn small" id="btn-buy-potion" type="button">Купити Зілля</button>
@@ -362,7 +350,7 @@
         <div class="info">
           <div class="t" id="shop-sword-name">🗡️ Іржавий меч</div>
           <div class="p" id="shop-sword-price">50 золота</div>
-          <div class="sub">+5 до атаки</div>
+          <div class="sub">+8 до атаки</div>
         </div>
         <button class="btn small" id="btn-buy-sword" type="button">Купити Меч</button>
       </div>
@@ -371,25 +359,42 @@
         <div class="ico">🛡️</div>
         <div class="info">
           <div class="t" id="shop-armor-name">👕 Шкіряна броня</div>
-          <div class="p" id="shop-armor-price">30 золота</div>
-          <div class="sub">+3 до захисту</div>
+          <div class="p" id="shop-armor-price">40 золота</div>
+          <div class="sub">+8 до захисту</div>
         </div>
         <button class="btn small" id="btn-buy-armor" type="button">Купити Броню</button>
       </div>
     </section>
 
-    <!-- ✨ ВІВТАР -->
+    <!-- ✨ ВІВТАР ДУШ -->
     <section class="tab" id="tab-altar" role="tabpanel" aria-labelledby="nav-altar">
       <h2>Вівтар Душ</h2>
 
       <div class="glass panel">
         <div class="altar-glyph">✨</div>
-        <p class="altar-text">Тут ти можеш витратити Душі на постійні покращення</p>
+        <p class="altar-text">Витрачай Душі на вічні благословення, що не згорають після смерті.</p>
+        <div class="stat" style="margin-top: 8px;"><span>Твої Душі</span><b id="soul-count">👻 0</b></div>
       </div>
 
-      <div class="glass wallet"><span>Твоє золото</span><b class="js-gold">🪙 20</b></div>
+      <div class="glass item">
+        <div class="ico">❤️</div>
+        <div class="info">
+          <div class="t">Благословення Життя</div>
+          <div class="p">5 Душ</div>
+          <div class="sub">+10 до макс. HP (Рівень: <span id="perk-hp-lvl">0</span>)</div>
+        </div>
+        <button class="btn small" id="btn-buy-perk-hp" type="button">Покращити</button>
+      </div>
 
-      <button class="btn attack" type="button">Продати душу за 10 золота</button>
+      <div class="glass item">
+        <div class="ico">⚔️</div>
+        <div class="info">
+          <div class="t">Благословення Сили</div>
+          <div class="p">8 Душ</div>
+          <div class="sub">+2 до базової атаки (Рівень: <span id="perk-atk-lvl">0</span>)</div>
+        </div>
+        <button class="btn small" id="btn-buy-perk-atk" type="button">Покращити</button>
+      </div>
     </section>
 
   </main>
@@ -412,7 +417,6 @@
 </div>
 
 <script>
-  // ---------- Telegram ----------
   const tg = window.Telegram && window.Telegram.WebApp;
   if (tg) {
     try { tg.ready(); tg.expand(); tg.setHeaderColor("#120c1a"); tg.setBackgroundColor("#0b0810"); } catch (e) {}
@@ -431,7 +435,6 @@
     alert(msg);
   }
 
-  // ---------- Tabs ----------
   const navButtons = document.querySelectorAll(".nav-btn");
   const tabs = document.querySelectorAll(".tab");
   function showTab(name) {
@@ -445,58 +448,70 @@
   }
   navButtons.forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
 
-  // ---------- Game data & Biomes ----------
-  const POTION_PRICE = 10, POTION_HEAL = 30;
-  const SWORD_BONUS = 5, SWORD_PRICE_STEP = 50;
-  const ARMOR_BONUS = 3, ARMOR_PRICE_STEP = 40;
+  const SWORD_BONUS = 8, SWORD_PRICE_STEP = 50;
+  const ARMOR_BONUS = 8, ARMOR_PRICE_STEP = 40;
 
   const swords = ["Порожньо", "🗡️ Іржавий меч", "⚔️ Сталевий меч", "🗡️ Срібний клинок", "🔥 Вогняний меч"];
   const armors = ["Порожньо", "👕 Шкіряна броня", "🛡️ Залізна броня", "⚔️ Лицарська броня"];
   const MAX_SWORD = swords.length - 1;
   const MAX_ARMOR = armors.length - 1;
 
-  // Система зон (Біомів)
   const ZONES = [
     { min: 1, max: 15, name: "Руїни", bgColor: "#120c1a", enemies: [
-      { name: "Слиз", acc: "Слиза", image: "img/slime.png", maxHp: 30, attack: 5, goldReward: 5 },
-      { name: "Скелет", acc: "Скелета", emoji: "💀", maxHp: 50, attack: 8, goldReward: 10 },
-      { name: "Гоблін", acc: "Гобліна", emoji: "👹", maxHp: 70, attack: 12, goldReward: 15 }
-    ]},
+      { name: "Слиз", acc: "Слиза", image: "img/slime.png", maxHp: 30, attack: 5, baseGold: 5 },
+      { name: "Скелет", acc: "Скелета", emoji: "💀", maxHp: 45, attack: 8, baseGold: 10 },
+      { name: "Гоблін", acc: "Гобліна", emoji: "👹", maxHp: 60, attack: 11, baseGold: 15 },
+      { name: "Вовк", acc: "Вовка", emoji: "🐺", maxHp: 75, attack: 14, baseGold: 20 }
+    ], boss: { name: "Король Слизів", acc: "Короля Слизів", emoji: "👑", maxHp: 200, attack: 22, baseGold: 100, souls: 1 } },
+
     { min: 16, max: 30, name: "Шахти", bgColor: "#150f0a", enemies: [
-      { name: "Шахтар-Зомбі", acc: "Зомбі", emoji: "🧟", maxHp: 110, attack: 18, goldReward: 25 },
-      { name: "Печерний Павук", acc: "Павука", emoji: "🕷️", maxHp: 95, attack: 22, goldReward: 28 },
-      { name: "Крот-Мутант", acc: "Крота", emoji: "🐀", maxHp: 130, attack: 20, goldReward: 30 }
-    ]},
+      { name: "Шахтар-Зомбі", acc: "Зомбі", emoji: "🧟", maxHp: 90, attack: 18, baseGold: 22 },
+      { name: "Печерний Павук", acc: "Павука", emoji: "🕷️", maxHp: 105, attack: 21, baseGold: 25 },
+      { name: "Крот-Мутант", acc: "Крота", emoji: "🐀", maxHp: 120, attack: 24, baseGold: 28 },
+      { name: "Шоломоносець", acc: "Шоломоносця", emoji: "🛡️", maxHp: 140, attack: 27, baseGold: 32 }
+    ], boss: { name: "Володар Шахт", acc: "Володаря Шахт", emoji: "⚒️", maxHp: 400, attack: 38, baseGold: 200, souls: 2 } },
+
     { min: 31, max: 45, name: "Печери", bgColor: "#091216", enemies: [
-      { name: "Кажанець", acc: "Кажанця", emoji: "🦇", maxHp: 160, attack: 28, goldReward: 40 },
-      { name: "Печерний Троль", acc: "Троля", emoji: "🧌", maxHp: 210, attack: 35, goldReward: 50 },
-      { name: "Скелет-Страж", acc: "Стража", emoji: "🛡️", maxHp: 190, attack: 32, goldReward: 45 }
-    ]},
+      { name: "Кажанець", acc: "Кажанця", emoji: "🦇", maxHp: 160, attack: 32, baseGold: 35 },
+      { name: "Печерний Троль", acc: "Троля", emoji: "🧌", maxHp: 190, attack: 36, baseGold: 40 },
+      { name: "Печерний Сталкер", acc: "Сталкера", emoji: "👁️", maxHp: 220, attack: 40, baseGold: 45 },
+      { name: "Кам'яний Голем", acc: "Голема", emoji: "🗿", maxHp: 250, attack: 44, baseGold: 50 }
+    ], boss: { name: "Жах Безодні", acc: "Жаху Безодні", emoji: "🦑", maxHp: 700, attack: 55, baseGold: 350, souls: 3 } },
+
     { min: 46, max: 60, name: "Крига", bgColor: "#0a151a", enemies: [
-      { name: "Крижаний Дух", acc: "Духа", emoji: "👻", maxHp: 250, attack: 42, goldReward: 65 },
-      { name: "Сніговий Вовк", acc: "Вовка", emoji: "🐺", maxHp: 280, attack: 48, goldReward: 75 },
-      { name: "Єті", acc: "Єті", emoji: "🦍", maxHp: 340, attack: 55, goldReward: 90 }
-    ]},
+      { name: "Крижаний Дух", acc: "Духа", emoji: "👻", maxHp: 300, attack: 50, baseGold: 55 },
+      { name: "Сніговий Вовк", acc: "Вовка", emoji: "🐺", maxHp: 340, attack: 56, baseGold: 62 },
+      { name: "Морозний Страж", acc: "Стража", emoji: "🧊", maxHp: 380, attack: 62, baseGold: 70 },
+      { name: "Єті", acc: "Єті", emoji: "🦍", maxHp: 420, attack: 68, baseGold: 78 }
+    ], boss: { name: "Крижана Королева", acc: "Крижаної Королеви", emoji: "❄️", maxHp: 1100, attack: 75, baseGold: 500, souls: 4 } },
+
     { min: 61, max: 75, name: "Пекло", bgColor: "#1a0b0b", enemies: [
-      { name: "Бес", acc: "Беса", emoji: "👺", maxHp: 400, attack: 65, goldReward: 110 },
-      { name: "Лавовий Голем", acc: "Голема", emoji: "🌋", maxHp: 480, attack: 75, goldReward: 135 },
-      { name: "Демон", acc: "Демона", emoji: "👿", maxHp: 550, attack: 85, goldReward: 160 }
-    ]},
+      { name: "Бес", acc: "Беса", emoji: "👺", maxHp: 480, attack: 78, baseGold: 85 },
+      { name: "Лавовий Голем", acc: "Голема", emoji: "🌋", maxHp: 540, attack: 86, baseGold: 95 },
+      { name: "Демон", acc: "Демона", emoji: "👿", maxHp: 600, attack: 94, baseGold: 105 },
+      { name: "Пекельний Гончак", acc: "Гончака", emoji: "🐕", maxHp: 660, attack: 102, baseGold: 115 }
+    ], boss: { name: "Архідемон", acc: "Архідемона", emoji: "🔥", maxHp: 1600, attack: 100, baseGold: 750, souls: 5 } },
+
     { min: 76, max: 90, name: "Кузні", bgColor: "#1c1208", enemies: [
-      { name: "Вогняний Механізм", acc: "Механізма", emoji: "⚙️", maxHp: 650, attack: 95, goldReward: 190 },
-      { name: "Біомеханічний Вартовий", acc: "Вартового", emoji: "🤖", maxHp: 750, attack: 110, goldReward: 220 },
-      { name: "Володар Ковадла", acc: "Володаря", emoji: "⚒️", maxHp: 850, attack: 125, goldReward: 260 }
-    ]},
+      { name: "Вогняний Механізм", acc: "Механізма", emoji: "⚙️", maxHp: 750, attack: 112, baseGold: 125 },
+      { name: "Біомеханічний Вартовий", acc: "Вартового", emoji: "🤖", maxHp: 830, attack: 122, baseGold: 138 },
+      { name: "Коваль Тьми", acc: "Коваля", emoji: "🔨", maxHp: 910, attack: 132, baseGold: 150 },
+      { name: "Залізний Титан", acc: "Титана", emoji: "🦾", maxHp: 1000, attack: 142, baseGold: 165 }
+    ], boss: { name: "Володар Кузень", acc: "Володаря Кузень", emoji: "⚡", maxHp: 2300, attack: 135, baseGold: 1100, souls: 6 } },
+
     { min: 91, max: 100, name: "Храм", bgColor: "#14101c", enemies: [
-      { name: "Фанатик", acc: "Фанатика", emoji: "🧙", maxHp: 980, attack: 140, goldReward: 300 },
-      { name: "Храмовий Страж", acc: "Стража", emoji: "🗿", maxHp: 1100, attack: 160, goldReward: 350 },
-      { name: "Падший Жрець", acc: "Жреця", emoji: "👁️", maxHp: 1250, attack: 180, goldReward: 410 }
-    ]},
+      { name: "Фанатик", acc: "Фанатика", emoji: "🧙", maxHp: 1120, attack: 156, baseGold: 180 },
+      { name: "Храмовий Страж", acc: "Стража", emoji: "🗿", maxHp: 1240, attack: 170, baseGold: 198 },
+      { name: "Падший Жрець", acc: "Жреця", emoji: "👁️", maxHp: 1360, attack: 184, baseGold: 215 },
+      { name: "Оракул Безодні", acc: "Оракула", emoji: "🔮", maxHp: 1500, attack: 198, baseGold: 235 }
+    ], boss: { name: "Аватар Храму", acc: "Аватара Храму", emoji: "🌟", maxHp: 3200, attack: 180, baseGold: 1600, souls: 8 } },
+
     { min: 101, max: 9999, name: "Порожнеча", bgColor: "#08060c", enemies: [
-      { name: "Тінь Порожнечі", acc: "Тіні", emoji: "👥", maxHp: 1500, attack: 210, goldReward: 500 },
-      { name: "Абстрактний Жах", acc: "Жаху", emoji: "🌀", maxHp: 1800, attack: 250, goldReward: 620 },
-      { name: "Ехо Безодні", acc: "Еха", emoji: "🌌", maxHp: 2200, attack: 300, goldReward: 750 }
-    ]}
+      { name: "Тінь Порожнечі", acc: "Тіні", emoji: "👥", maxHp: 1700, attack: 220, baseGold: 260 },
+      { name: "Абстрактний Жах", acc: "Жаху", emoji: "🌀", maxHp: 1950, attack: 242, baseGold: 295 },
+      { name: "Ехо Безодні", acc: "Еха", emoji: "🌌", maxHp: 2200, attack: 265, baseGold: 330 },
+      { name: "Пожирач Світів", acc: "Пожирача", emoji: "🕳️", maxHp: 2500, attack: 290, baseGold: 370 }
+    ], boss: { name: "Істинний Бог Безодні", acc: "Істинного Бога", emoji: "🌌", maxHp: 5000, attack: 250, baseGold: 3000, souls: 12 } }
   ];
 
   function getZone(floor) {
@@ -505,47 +520,34 @@
 
   function makeEnemy(floor) {
     const zone = getZone(floor);
-    const isBoss = (floor % 10 === 0);
-    
-    let base;
+    const isBoss = (floor === zone.max);
+
     if (isBoss) {
-      // Масштабування для боса кожні 10 поверхів
-      const bossMultiplier = Math.pow(1.35, Math.floor(floor / 10) - 1);
-      base = {
-        name: `Бос Етажу ${floor}`,
-        acc: `Боса Етажу ${floor}`,
-        emoji: "👑",
-        maxHp: Math.round(500 * bossMultiplier),
-        attack: Math.round(35 * bossMultiplier),
-        goldReward: Math.round(150 * bossMultiplier),
-        isBoss: true
+      const b = zone.boss;
+      return {
+        name: b.name, acc: b.acc, emoji: b.emoji, image: null,
+        hp: b.maxHp, maxHp: b.maxHp, attack: b.attack,
+        baseGold: b.baseGold, soulsReward: b.souls, isBoss: true
       };
     } else {
-      // Звичайний ворог із пулу поточної зони + загальне масштабування поверху
-      const template = zone.enemies[(floor - 1) % zone.enemies.length];
-      const scale = Math.pow(1.12, floor - 1);
-      base = {
-        name: template.name,
-        acc: template.acc,
-        emoji: template.emoji,
-        image: template.image || null,
-        maxHp: Math.round(template.maxHp * scale),
-        attack: Math.round(template.attack * scale),
-        goldReward: Math.round(template.goldReward * scale),
-        isBoss: false
+      const template = zone.enemies[Math.floor(Math.random() * zone.enemies.length)];
+      const hp = Math.round(template.maxHp * (1 + floor * 0.1));
+      const attack = Math.round(template.attack + floor * 1.5);
+      return {
+        name: template.name, acc: template.acc, emoji: template.emoji,
+        image: template.image || null, hp: hp, maxHp: hp,
+        attack: attack, baseGold: template.baseGold, soulsReward: 0, isBoss: false
       };
     }
-    return { ...base, hp: base.maxHp };
   }
 
-  // ---------- Player & save ----------
-  const SAVE_KEY = "rpg_save_abyss_v2";
+  const SAVE_KEY = "rpg_save_abyss_v3";
 
   function newPlayer() {
     return {
       hp: 100, maxHp: 100, gold: 20, attack: 15, defense: 5, potions: 0,
-      swordLevel: 0, swordPrice: 50, armorLevel: 0, armorPrice: 30,
-      floor: 1, runGold: 0
+      swordLevel: 0, swordPrice: 50, armorLevel: 0, armorPrice: 40,
+      floor: 1, runGold: 0, souls: 0, perkHpLvl: 0, perkAtkLvl: 0
     };
   }
 
@@ -553,6 +555,13 @@
   let enemy = makeEnemy(1);
   let busy = false;
   let playerDead = false;
+
+  function applyPerksAndMaxHp() {
+    player.maxHp = 100 + (player.perkHpLvl * 10);
+    player.attack = 15 + (player.perkAtkLvl * 2) + (player.swordLevel * SWORD_BONUS);
+    player.defense = 5 + (player.armorLevel * ARMOR_BONUS);
+    if (player.hp > player.maxHp) player.hp = player.maxHp;
+  }
 
   function saveGame() {
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(player)); } catch (e) {}
@@ -575,12 +584,16 @@
       base.floor = Math.max(1, Math.floor(base.floor));
       base.gold = Math.max(0, base.gold);
       base.runGold = Math.max(0, base.runGold);
-      base.hp = Math.max(0, Math.min(base.hp, base.maxHp));
+      base.souls = Math.max(0, Math.floor(base.souls));
+      base.perkHpLvl = Math.max(0, Math.floor(base.perkHpLvl));
+      base.perkAtkLvl = Math.max(0, Math.floor(base.perkAtkLvl));
+      
       player = base;
-    } catch (e) { player = newPlayer(); }
+      applyPerksAndMaxHp();
+      player.hp = Math.max(0, Math.min(player.hp, player.maxHp));
+    } catch (e) { player = newPlayer(); applyPerksAndMaxHp(); }
   }
 
-  // ---------- DOM ----------
   const $ = id => document.getElementById(id);
   const ui = {
     floor: $("floor"),
@@ -591,10 +604,13 @@
     log: $("log"), statAttack: $("stat-attack"), statDefense: $("stat-defense"),
     swordName: $("sword-name"), swordBonus: $("sword-bonus"), slotSword: $("slot-sword"),
     armorName: $("armor-name"), armorBonus: $("armor-bonus"), slotArmor: $("slot-armor"),
+    shopPotionPrice: $("shop-potion-price"),
     shopSwordName: $("shop-sword-name"), shopSwordPrice: $("shop-sword-price"),
     shopArmorName: $("shop-armor-name"), shopArmorPrice: $("shop-armor-price"),
     btnAttack: $("btn-attack"), btnPotion: $("btn-potion"),
     btnBuyPotion: $("btn-buy-potion"), btnBuySword: $("btn-buy-sword"), btnBuyArmor: $("btn-buy-armor"),
+    soulCount: $("soul-count"), perkHpLvl: $("perk-hp-lvl"), perkAtkLvl: $("perk-atk-lvl"),
+    btnBuyPerkHp: $("btn-buy-perk-hp"), btnBuyPerkAtk: $("btn-buy-perk-atk"),
     death: $("death-screen"), deathFloors: $("death-floors"), deathGold: $("death-gold"), btnRespawn: $("btn-respawn")
   };
 
@@ -625,17 +641,18 @@
     setTimeout(() => s.remove(), 1000);
   }
 
-  // ---------- UI update ----------
+  function getPotionPrice() {
+    return 10 + (player.floor * 2);
+  }
+
   function updateUI() {
     const zone = getZone(player.floor);
-    document.body.style.background = zone.bgColor;
+    document.body.style.backgroundColor = zone.bgColor;
 
     ui.floor.textContent = `Етаж ${player.floor} | ${zone.name}`;
     
-    // Рендер спрайта ворога (картинка або емодзі)
     if (enemy.image) {
       ui.enemyPortrait.innerHTML = `<div class="shell" id="enemy-shell"><img src="${enemy.image}" class="enemy-sprite"></div>`;
-      // Оновлюємо посилання на shell
       ui.enemyShell = $("enemy-shell");
       ui.enemySprite = document.querySelector(".enemy-sprite");
     } else {
@@ -652,11 +669,11 @@
     ui.playerFill.style.width = pct(player.hp, player.maxHp) + "%";
     ui.playerText.textContent = "HP " + Math.max(0, player.hp) + "/" + player.maxHp;
 
-    // Золото та зілля
     document.querySelectorAll(".js-gold").forEach(el => { el.textContent = "🪙 " + player.gold; });
     document.querySelectorAll(".js-potions").forEach(el => { el.textContent = player.potions; });
+    ui.soulCount.textContent = "👻 " + player.souls;
 
-    // Герой
+    applyPerksAndMaxHp();
     ui.statAttack.textContent = player.attack;
     ui.statDefense.textContent = player.defense;
     const sl = player.swordLevel, al = player.armorLevel;
@@ -667,7 +684,8 @@
     ui.armorBonus.textContent = al > 0 ? "+" + (al * ARMOR_BONUS) + " до захисту" : "";
     ui.slotArmor.classList.toggle("filled", al > 0);
 
-    // Крамниця
+    ui.shopPotionPrice.textContent = getPotionPrice() + " золота";
+
     const swordMax = sl >= MAX_SWORD, armorMax = al >= MAX_ARMOR;
     ui.shopSwordName.textContent = swordMax ? "Меч вдосконалено" : swords[sl + 1];
     ui.shopSwordPrice.textContent = swordMax ? "Максимальний рівень" : player.swordPrice + " золота";
@@ -676,18 +694,19 @@
     ui.shopArmorPrice.textContent = armorMax ? "Максимальний рівень" : player.armorPrice + " золота";
     ui.btnBuyArmor.disabled = armorMax;
 
-    // Кнопки бою
+    ui.perkHpLvl.textContent = player.perkHpLvl;
+    ui.perkAtkLvl.textContent = player.perkAtkLvl;
+
     ui.btnAttack.disabled = busy || playerDead;
     ui.btnPotion.disabled = playerDead;
     ui.btnPotion.textContent = "Зілля (" + player.potions + ")";
   }
 
-  // ---------- Combat ----------
   function playerAttack() {
     if (busy || playerDead) return;
     busy = true;
 
-    const dmg = Math.max(1, rand(player.attack - 5, player.attack + 5));
+    const dmg = Math.max(1, rand(player.attack - 4, player.attack + 4));
     enemy.hp = Math.max(0, enemy.hp - dmg);
 
     shake(ui.enemyShell);
@@ -723,15 +742,22 @@
   }
 
   function onEnemyDefeated() {
-    const reward = enemy.goldReward;
-    player.gold += reward;
-    player.runGold += reward;
+    const earnedGold = Math.floor(enemy.baseGold * (1 + (player.floor * 0.1)) * (0.8 + Math.random() * 0.4));
+    player.gold += earnedGold;
+    player.runGold += earnedGold;
+
+    let logMsg = `Перемога! Ти отримав ${earnedGold} золота`;
+    if (enemy.isBoss && enemy.soulsReward > 0) {
+      player.souls += enemy.soulsReward;
+      logMsg += ` та здобув ${enemy.soulsReward} Душ(і)!`;
+    }
+
+    addLog(logMsg);
+    haptic("notify", "success");
+    ui.enemyShell.classList.add("dead");
+
     player.floor += 1;
     saveGame();
-
-    ui.enemyShell.classList.add("dead");
-    addLog("Перемога! Ти отримав " + reward + " золота");
-    haptic("notify", "success");
 
     setTimeout(() => {
       enemy = makeEnemy(player.floor);
@@ -742,7 +768,6 @@
     }, 1500);
   }
 
-  // ---------- Death screen ----------
   function showDeath() {
     playerDead = true;
     ui.deathFloors.textContent = Math.max(0, player.floor - 1);
@@ -767,7 +792,6 @@
     saveGame();
   }
 
-  // ---------- Potion & Shop ----------
   function usePotion() {
     if (playerDead) return;
     if (player.potions === 0) {
@@ -779,7 +803,8 @@
       addLog("У тебе вже повне здоров’я");
       return;
     }
-    const healed = Math.min(POTION_HEAL, player.maxHp - player.hp);
+    const healAmount = Math.round(player.maxHp * 0.5);
+    const healed = Math.min(healAmount, player.maxHp - player.hp);
     player.potions -= 1;
     player.hp += healed;
     floatText(ui.playerPortrait, "+" + healed, "heal");
@@ -790,8 +815,9 @@
   }
 
   function buyPotion() {
-    if (player.gold < POTION_PRICE) { notify("Недостатньо золота!"); return; }
-    player.gold -= POTION_PRICE;
+    const cost = getPotionPrice();
+    if (player.gold < cost) { notify("Недостатньо золота!"); return; }
+    player.gold -= cost;
     player.potions += 1;
     haptic("notify", "success");
     updateUI();
@@ -802,9 +828,9 @@
     if (player.swordLevel >= MAX_SWORD) { notify("Меч вже досяг максимального рівня!"); return; }
     if (player.gold < player.swordPrice) { notify("Недостатньо золота!"); return; }
     player.gold -= player.swordPrice;
-    player.attack += SWORD_BONUS;
     player.swordLevel += 1;
     player.swordPrice += SWORD_PRICE_STEP;
+    applyPerksAndMaxHp();
     haptic("notify", "success");
     updateUI();
     saveGame();
@@ -815,21 +841,47 @@
     if (player.armorLevel >= MAX_ARMOR) { notify("Броня вже досягла максимального рівня!"); return; }
     if (player.gold < player.armorPrice) { notify("Недостатньо золота!"); return; }
     player.gold -= player.armorPrice;
-    player.defense += ARMOR_BONUS;
     player.armorLevel += 1;
     player.armorPrice += ARMOR_PRICE_STEP;
+    applyPerksAndMaxHp();
     haptic("notify", "success");
     updateUI();
     saveGame();
     notify("Броню куплено! Захист зріс!");
   }
 
-  // ---------- Init ----------
+  function buyPerkHp() {
+    const cost = 5;
+    if (player.souls < cost) { notify("Недостатньо Душ!"); return; }
+    player.souls -= cost;
+    player.perkHpLvl += 1;
+    applyPerksAndMaxHp();
+    player.hp = player.maxHp;
+    haptic("notify", "success");
+    updateUI();
+    saveGame();
+    notify("Благословення Життя прийнято! Макс. HP зросло.");
+  }
+
+  function buyPerkAtk() {
+    const cost = 8;
+    if (player.souls < cost) { notify("Недостатньо Душ!"); return; }
+    player.souls -= cost;
+    player.perkAtkLvl += 1;
+    applyPerksAndMaxHp();
+    haptic("notify", "success");
+    updateUI();
+    saveGame();
+    notify("Благословення Сили прийнято! Базова атака зросла.");
+  }
+
   ui.btnAttack.addEventListener("click", playerAttack);
   ui.btnPotion.addEventListener("click", usePotion);
   ui.btnBuyPotion.addEventListener("click", buyPotion);
   ui.btnBuySword.addEventListener("click", buySword);
   ui.btnBuyArmor.addEventListener("click", buyArmor);
+  ui.btnBuyPerkHp.addEventListener("click", buyPerkHp);
+  ui.btnBuyPerkAtk.addEventListener("click", buyPerkAtk);
   ui.btnRespawn.addEventListener("click", respawn);
 
   loadGame();
@@ -838,4 +890,4 @@
   if (player.hp <= 0) showDeath();
 </script>
 </body>
-  </html>
+            </html>
