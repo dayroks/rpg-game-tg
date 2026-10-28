@@ -1,4 +1,4 @@
-<!    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
@@ -45,6 +45,30 @@
     padding-top: env(safe-area-inset-top, 0px);
   }
 
+  /* ---------- Toast Notification ---------- */
+  .toast-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: rgba(30, 10, 10, 0.95);
+    border: 1px solid #ff3333;
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    z-index: 1000;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(255, 51, 51, 0.35);
+    transition: transform 0.3s ease-out;
+    pointer-events: none;
+  }
+  .toast-notification.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ---------- Screens ---------- */
   #screens {
     flex: 1;
     min-height: 0;
@@ -58,6 +82,7 @@
   .tab { display: none; flex-direction: column; gap: 12px; padding: 14px 14px 20px; }
   .tab.active { display: flex; flex: 1 0 auto; }
 
+  /* ---------- Glass ---------- */
   .glass {
     background: var(--glass);
     -webkit-backdrop-filter: blur(14px) saturate(130%);
@@ -71,6 +96,7 @@
     text-shadow: 0 0 14px rgba(212, 169, 71, 0.35); text-align: center; padding-top: 4px;
   }
 
+  /* ---------- Fighters ---------- */
   .fighter { --sp: 150px; position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px; }
   .fighter .name { font-size: 1.05rem; font-weight: 600; letter-spacing: 0.05em; }
 
@@ -118,14 +144,17 @@
     background: rgba(0, 0, 0, 0.45); border: 1px solid var(--ember-dim); border-radius: 999px;
   }
 
+  /* Floating Combat Text */
   .float {
-    position: absolute; top: 28%; transform: translateX(-50%);
+    position: absolute; top: 25%; transform: translateX(-50%);
     font-size: 1.7rem; font-weight: 700; line-height: 1; color: #ff4d4d;
     text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(255, 77, 77, 0.5);
     pointer-events: none; animation: floatUp 1s ease-out forwards; z-index: 10;
   }
+  .float.player-dmg { color: #ffd166; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(255, 209, 102, 0.5); }
   .float.heal { color: #6fe08c; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(111, 224, 140, 0.5); }
 
+  /* ---------- Log ---------- */
   .log {
     max-height: 150px;
     min-height: 80px;
@@ -138,6 +167,7 @@
   .log p { margin-bottom: 4px; color: var(--muted); }
   .log p:last-child { margin-bottom: 0; color: var(--bone); }
 
+  /* ---------- Buttons ---------- */
   .btn-row {
     display: flex;
     gap: 10px;
@@ -162,6 +192,7 @@
   .btn:disabled { opacity: 0.4; pointer-events: none; }
   .btn:focus-visible, .nav-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
 
+  /* ---------- Hero ---------- */
   .panel { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
   .panel h3 { font-size: 1rem; font-weight: 600; letter-spacing: 0.06em; color: var(--ember); }
   .stat {
@@ -185,6 +216,7 @@
   .slot.filled .slot-name { color: var(--bone); }
   .slot-bonus { font-size: 0.78rem; color: var(--ember); min-height: 1em; }
 
+  /* ---------- Shop / Altar ---------- */
   .wallet { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; font-size: 0.9rem; }
   .wallet b { color: var(--ember); }
   .item { display: flex; align-items: center; gap: 12px; padding: 12px; }
@@ -196,6 +228,7 @@
   .altar-text { line-height: 1.6; text-align: center; font-size: 0.95rem; }
   .altar-glyph { text-align: center; font-size: 3rem; filter: drop-shadow(0 0 14px rgba(212, 169, 71, 0.6)); }
 
+  /* ---------- Bottom nav ---------- */
   #nav {
     flex-shrink: 0;
     display: flex;
@@ -259,6 +292,8 @@
 </style>
 </head>
 <body>
+<div id="toast" class="toast-notification"></div>
+
 <div id="app">
   <main id="screens">
 
@@ -272,14 +307,14 @@
         <div class="name" id="enemy-name">Слиз</div>
         <div class="hp">
           <div class="hp-track"><div class="hp-fill enemy" id="enemy-hp-fill"></div></div>
-          <div class="hp-text" id="enemy-hp-text">HP 30/30</div>
+          <div class="hp-text" id="enemy-hp-text">HP 36/36</div>
         </div>
       </div>
 
       <div class="glass log" id="log" aria-live="polite"><p>Бій починається...</p></div>
 
       <div class="glass fighter me">
-        <div class="gold js-gold">🪙 20</div>
+        <div class="gold js-gold">🪙 30</div>
         <div class="portrait" id="player-portrait">
           <div class="shell" id="player-shell"><div class="sprite">🧙‍♂️</div></div>
         </div>
@@ -303,7 +338,7 @@
           <div class="stat"><span>Атака</span><b id="stat-attack">15</b></div>
           <div class="stat"><span>Захист</span><b id="stat-defense">5</b></div>
           <div class="stat"><span>Крит</span><b>10%</b></div>
-          <div class="stat"><span>Золото</span><b class="js-gold">🪙 20</b></div>
+          <div class="stat"><span>Золото</span><b class="js-gold">🪙 30</b></div>
         </div>
       </div>
 
@@ -312,12 +347,12 @@
         <div class="slots">
           <div class="slot" id="slot-sword">
             <span class="slot-label">Меч</span>
-            <span class="slot-name" id="sword-name">Порожньо</span>
+            <span class="slot-name" id="sword-name">Рівень 0</span>
             <span class="slot-bonus" id="sword-bonus"></span>
           </div>
           <div class="slot" id="slot-armor">
             <span class="slot-label">Броня</span>
-            <span class="slot-name" id="armor-name">Порожньо</span>
+            <span class="slot-name" id="armor-name">Рівень 0</span>
             <span class="slot-bonus" id="armor-bonus"></span>
           </div>
         </div>
@@ -333,7 +368,7 @@
     <section class="tab" id="tab-shop" role="tabpanel" aria-labelledby="nav-shop">
       <h2>Крамниця</h2>
 
-      <div class="glass wallet"><span>Твоє золото</span><b class="js-gold">🪙 20</b></div>
+      <div class="glass wallet"><span>Твоє золото</span><b class="js-gold">🪙 30</b></div>
 
       <div class="glass item">
         <div class="ico">🧪</div>
@@ -348,21 +383,21 @@
       <div class="glass item">
         <div class="ico">⚔️</div>
         <div class="info">
-          <div class="t" id="shop-sword-name">🗡️ Іржавий меч</div>
+          <div class="t" id="shop-sword-name">🗡️ Прокачка Меча (Рв. 1)</div>
           <div class="p" id="shop-sword-price">50 золота</div>
-          <div class="sub">+8 до атаки</div>
+          <div class="sub" id="shop-sword-sub">Поточна атака: +0</div>
         </div>
-        <button class="btn small" id="btn-buy-sword" type="button">Купити Меч</button>
+        <button class="btn small" id="btn-buy-sword" type="button">Покращити Меч</button>
       </div>
 
       <div class="glass item">
         <div class="ico">🛡️</div>
         <div class="info">
-          <div class="t" id="shop-armor-name">👕 Шкіряна броня</div>
+          <div class="t" id="shop-armor-name">👕 Прокачка Броні (Рв. 1)</div>
           <div class="p" id="shop-armor-price">40 золота</div>
-          <div class="sub">+8 до захисту</div>
+          <div class="sub" id="shop-armor-sub">Поточний захист: +0</div>
         </div>
-        <button class="btn small" id="btn-buy-armor" type="button">Купити Броню</button>
+        <button class="btn small" id="btn-buy-armor" type="button">Покращити Броню</button>
       </div>
     </section>
 
@@ -374,6 +409,16 @@
         <div class="altar-glyph">✨</div>
         <p class="altar-text">Витрачай Душі на вічні благословення, що не згорають після смерті.</p>
         <div class="stat" style="margin-top: 8px;"><span>Твої Душі</span><b id="soul-count">👻 0</b></div>
+      </div>
+
+      <div class="glass item">
+        <div class="ico">🔄</div>
+        <div class="info">
+          <div class="t">Обмін Золота на Душу</div>
+          <div class="p">500 золота</div>
+          <div class="sub">+1 Душа</div>
+        </div>
+        <button class="btn small" id="btn-convert-gold" type="button">Обміняти</button>
       </div>
 
       <div class="glass item">
@@ -417,6 +462,7 @@
 </div>
 
 <script>
+  // ---------- Telegram & Toast ----------
   const tg = window.Telegram && window.Telegram.WebApp;
   if (tg) {
     try { tg.ready(); tg.expand(); tg.setHeaderColor("#120c1a"); tg.setBackgroundColor("#0b0810"); } catch (e) {}
@@ -430,11 +476,18 @@
     } catch (e) {}
   }
 
-  function notify(msg) {
-    try { if (tg && tg.showAlert) { tg.showAlert(msg); return; } } catch (e) {}
-    alert(msg);
+  let toastTimer = null;
+  function showToast(message) {
+    const t = document.getElementById("toast");
+    t.textContent = message;
+    t.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      t.classList.remove("show");
+    }, 2800);
   }
 
+  // ---------- Tabs ----------
   const navButtons = document.querySelectorAll(".nav-btn");
   const tabs = document.querySelectorAll(".tab");
   function showTab(name) {
@@ -448,70 +501,67 @@
   }
   navButtons.forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
 
-  const SWORD_BONUS = 8, SWORD_PRICE_STEP = 50;
-  const ARMOR_BONUS = 8, ARMOR_PRICE_STEP = 40;
-
-  const swords = ["Порожньо", "🗡️ Іржавий меч", "⚔️ Сталевий меч", "🗡️ Срібний клинок", "🔥 Вогняний меч"];
-  const armors = ["Порожньо", "👕 Шкіряна броня", "🛡️ Залізна броня", "⚔️ Лицарська броня"];
-  const MAX_SWORD = swords.length - 1;
-  const MAX_ARMOR = armors.length - 1;
+  // ---------- Game Data ----------
+  const SWORD_BONUS = 8, SWORD_BASE_PRICE = 50;
+  const ARMOR_BONUS = 8, ARMOR_BASE_PRICE = 40;
+  const MAX_EQUIP_LEVEL = 100;
 
   const ZONES = [
     { min: 1, max: 15, name: "Руїни", bgColor: "#120c1a", enemies: [
-      { name: "Слиз", acc: "Слиза", image: "img/slime.png", maxHp: 30, attack: 5, baseGold: 5 },
-      { name: "Скелет", acc: "Скелета", emoji: "💀", maxHp: 45, attack: 8, baseGold: 10 },
-      { name: "Гоблін", acc: "Гобліна", emoji: "👹", maxHp: 60, attack: 11, baseGold: 15 },
-      { name: "Вовк", acc: "Вовка", emoji: "🐺", maxHp: 75, attack: 14, baseGold: 20 }
-    ], boss: { name: "Король Слизів", acc: "Короля Слизів", emoji: "👑", maxHp: 200, attack: 22, baseGold: 100, souls: 1 } },
+      { name: "Слиз", acc: "Слиза", image: "img/slime.png", maxHp: 36, attack: 6, baseGold: 8 },
+      { name: "Скелет", acc: "Скелета", emoji: "💀", maxHp: 54, attack: 10, baseGold: 14 },
+      { name: "Гоблін", acc: "Гобліна", emoji: "👹", maxHp: 72, attack: 13, baseGold: 20 },
+      { name: "Вовк", acc: "Вовка", emoji: "🐺", maxHp: 90, attack: 17, baseGold: 26 }
+    ], boss: { name: "Король Слизів", acc: "Короля Слизів", emoji: "👑", maxHp: 240, attack: 26, baseGold: 130, souls: 1 } },
 
     { min: 16, max: 30, name: "Шахти", bgColor: "#150f0a", enemies: [
-      { name: "Шахтар-Зомбі", acc: "Зомбі", emoji: "🧟", maxHp: 90, attack: 18, baseGold: 22 },
-      { name: "Печерний Павук", acc: "Павука", emoji: "🕷️", maxHp: 105, attack: 21, baseGold: 25 },
-      { name: "Крот-Мутант", acc: "Крота", emoji: "🐀", maxHp: 120, attack: 24, baseGold: 28 },
-      { name: "Шоломоносець", acc: "Шоломоносця", emoji: "🛡️", maxHp: 140, attack: 27, baseGold: 32 }
-    ], boss: { name: "Володар Шахт", acc: "Володаря Шахт", emoji: "⚒️", maxHp: 400, attack: 38, baseGold: 200, souls: 2 } },
+      { name: "Шахтар-Зомбі", acc: "Зомбі", emoji: "🧟", maxHp: 110, attack: 22, baseGold: 30 },
+      { name: "Печерний Павук", acc: "Павука", emoji: "🕷️", maxHp: 130, attack: 25, baseGold: 35 },
+      { name: "Крот-Мутант", acc: "Крота", emoji: "🐀", maxHp: 150, attack: 28, baseGold: 40 },
+      { name: "Шоломоносець", acc: "Шоломоносця", emoji: "🛡️", maxHp: 170, attack: 32, baseGold: 45 }
+    ], boss: { name: "Володар Шахт", acc: "Володаря Шахт", emoji: "⚒️", maxHp: 480, attack: 45, baseGold: 250, souls: 2 } },
 
     { min: 31, max: 45, name: "Печери", bgColor: "#091216", enemies: [
-      { name: "Кажанець", acc: "Кажанця", emoji: "🦇", maxHp: 160, attack: 32, baseGold: 35 },
-      { name: "Печерний Троль", acc: "Троля", emoji: "🧌", maxHp: 190, attack: 36, baseGold: 40 },
-      { name: "Печерний Сталкер", acc: "Сталкера", emoji: "👁️", maxHp: 220, attack: 40, baseGold: 45 },
-      { name: "Кам'яний Голем", acc: "Голема", emoji: "🗿", maxHp: 250, attack: 44, baseGold: 50 }
-    ], boss: { name: "Жах Безодні", acc: "Жаху Безодні", emoji: "🦑", maxHp: 700, attack: 55, baseGold: 350, souls: 3 } },
+      { name: "Кажанець", acc: "Кажанця", emoji: "🦇", maxHp: 190, attack: 38, baseGold: 50 },
+      { name: "Печерний Троль", acc: "Троля", emoji: "🧌", maxHp: 230, attack: 43, baseGold: 60 },
+      { name: "Печерний Сталкер", acc: "Сталкера", emoji: "👁️", maxHp: 270, attack: 48, baseGold: 70 },
+      { name: "Кам'яний Голем", acc: "Голема", emoji: "🗿", maxHp: 310, attack: 53, baseGold: 80 }
+    ], boss: { name: "Жах Безодні", acc: "Жаху Безодні", emoji: "🦑", maxHp: 800, attack: 65, baseGold: 400, souls: 3 } },
 
     { min: 46, max: 60, name: "Крига", bgColor: "#0a151a", enemies: [
-      { name: "Крижаний Дух", acc: "Духа", emoji: "👻", maxHp: 300, attack: 50, baseGold: 55 },
-      { name: "Сніговий Вовк", acc: "Вовка", emoji: "🐺", maxHp: 340, attack: 56, baseGold: 62 },
-      { name: "Морозний Страж", acc: "Стража", emoji: "🧊", maxHp: 380, attack: 62, baseGold: 70 },
-      { name: "Єті", acc: "Єті", emoji: "🦍", maxHp: 420, attack: 68, baseGold: 78 }
-    ], boss: { name: "Крижана Королева", acc: "Крижаної Королеви", emoji: "❄️", maxHp: 1100, attack: 75, baseGold: 500, souls: 4 } },
+      { name: "Крижаний Дух", acc: "Духа", emoji: "👻", maxHp: 360, attack: 60, baseGold: 90 },
+      { name: "Сніговий Вовк", acc: "Вовка", emoji: "🐺", maxHp: 410, attack: 67, baseGold: 100 },
+      { name: "Морозний Страж", acc: "Стража", emoji: "🧊", maxHp: 460, attack: 74, baseGold: 110 },
+      { name: "Єті", acc: "Єті", emoji: "🦍", maxHp: 510, attack: 81, baseGold: 120 }
+    ], boss: { name: "Крижана Королева", acc: "Крижаної Королеви", emoji: "❄️", maxHp: 1300, attack: 90, baseGold: 600, souls: 4 } },
 
     { min: 61, max: 75, name: "Пекло", bgColor: "#1a0b0b", enemies: [
-      { name: "Бес", acc: "Беса", emoji: "👺", maxHp: 480, attack: 78, baseGold: 85 },
-      { name: "Лавовий Голем", acc: "Голема", emoji: "🌋", maxHp: 540, attack: 86, baseGold: 95 },
-      { name: "Демон", acc: "Демона", emoji: "👿", maxHp: 600, attack: 94, baseGold: 105 },
-      { name: "Пекельний Гончак", acc: "Гончака", emoji: "🐕", maxHp: 660, attack: 102, baseGold: 115 }
-    ], boss: { name: "Архідемон", acc: "Архідемона", emoji: "🔥", maxHp: 1600, attack: 100, baseGold: 750, souls: 5 } },
+      { name: "Бес", acc: "Беса", emoji: "👺", maxHp: 580, attack: 92, baseGold: 135 },
+      { name: "Лавовий Голем", acc: "Голема", emoji: "🌋", maxHp: 650, attack: 102, baseGold: 150 },
+      { name: "Демон", acc: "Демона", emoji: "👿", maxHp: 720, attack: 112, baseGold: 165 },
+      { name: "Пекельний Гончак", acc: "Гончака", emoji: "🐕", maxHp: 790, attack: 122, baseGold: 180 }
+    ], boss: { name: "Архідемон", acc: "Архідемона", emoji: "🔥", maxHp: 1800, attack: 120, baseGold: 900, souls: 5 } },
 
     { min: 76, max: 90, name: "Кузні", bgColor: "#1c1208", enemies: [
-      { name: "Вогняний Механізм", acc: "Механізма", emoji: "⚙️", maxHp: 750, attack: 112, baseGold: 125 },
-      { name: "Біомеханічний Вартовий", acc: "Вартового", emoji: "🤖", maxHp: 830, attack: 122, baseGold: 138 },
-      { name: "Коваль Тьми", acc: "Коваля", emoji: "🔨", maxHp: 910, attack: 132, baseGold: 150 },
-      { name: "Залізний Титан", acc: "Титана", emoji: "🦾", maxHp: 1000, attack: 142, baseGold: 165 }
-    ], boss: { name: "Володар Кузень", acc: "Володаря Кузень", emoji: "⚡", maxHp: 2300, attack: 135, baseGold: 1100, souls: 6 } },
+      { name: "Вогняний Механізм", acc: "Механізма", emoji: "⚙️", maxHp: 890, attack: 134, baseGold: 200 },
+      { name: "Біомеханічний Вартовий", acc: "Вартового", emoji: "🤖", maxHp: 980, attack: 146, baseGold: 220 },
+      { name: "Коваль Тьми", acc: "Коваля", emoji: "🔨", maxHp: 1070, attack: 158, baseGold: 240 },
+      { name: "Залізний Титан", acc: "Титана", emoji: "🦾", maxHp: 1160, attack: 170, baseGold: 260 }
+    ], boss: { name: "Володар Кузень", acc: "Володаря Кузень", emoji: "⚡", maxHp: 2600, attack: 160, baseGold: 1300, souls: 6 } },
 
     { min: 91, max: 100, name: "Храм", bgColor: "#14101c", enemies: [
-      { name: "Фанатик", acc: "Фанатика", emoji: "🧙", maxHp: 1120, attack: 156, baseGold: 180 },
-      { name: "Храмовий Страж", acc: "Стража", emoji: "🗿", maxHp: 1240, attack: 170, baseGold: 198 },
-      { name: "Падший Жрець", acc: "Жреця", emoji: "👁️", maxHp: 1360, attack: 184, baseGold: 215 },
-      { name: "Оракул Безодні", acc: "Оракула", emoji: "🔮", maxHp: 1500, attack: 198, baseGold: 235 }
-    ], boss: { name: "Аватар Храму", acc: "Аватара Храму", emoji: "🌟", maxHp: 3200, attack: 180, baseGold: 1600, souls: 8 } },
+      { name: "Фанатик", acc: "Фанатика", emoji: "🧙", maxHp: 1300, attack: 185, baseGold: 290 },
+      { name: "Храмовий Страж", acc: "Стража", emoji: "🗿", maxHp: 1450, attack: 200, baseGold: 320 },
+      { name: "Падший Жрець", acc: "Жреця", emoji: "👁️", maxHp: 1600, attack: 215, baseGold: 350 },
+      { name: "Оракул Безодні", acc: "Оракула", emoji: "🔮", maxHp: 1750, attack: 230, baseGold: 380 }
+    ], boss: { name: "Аватар Храму", acc: "Аватара Храму", emoji: "🌟", maxHp: 3600, attack: 210, baseGold: 2000, souls: 8 } },
 
     { min: 101, max: 9999, name: "Порожнеча", bgColor: "#08060c", enemies: [
-      { name: "Тінь Порожнечі", acc: "Тіні", emoji: "👥", maxHp: 1700, attack: 220, baseGold: 260 },
-      { name: "Абстрактний Жах", acc: "Жаху", emoji: "🌀", maxHp: 1950, attack: 242, baseGold: 295 },
-      { name: "Ехо Безодні", acc: "Еха", emoji: "🌌", maxHp: 2200, attack: 265, baseGold: 330 },
-      { name: "Пожирач Світів", acc: "Пожирача", emoji: "🕳️", maxHp: 2500, attack: 290, baseGold: 370 }
-    ], boss: { name: "Істинний Бог Безодні", acc: "Істинного Бога", emoji: "🌌", maxHp: 5000, attack: 250, baseGold: 3000, souls: 12 } }
+      { name: "Тінь Порожнечі", acc: "Тіні", emoji: "👥", maxHp: 2000, attack: 255, baseGold: 420 },
+      { name: "Абстрактний Жах", acc: "Жаху", emoji: "🌀", maxHp: 2300, attack: 280, baseGold: 470 },
+      { name: "Ехо Безодні", acc: "Еха", emoji: "🌌", maxHp: 2600, attack: 305, baseGold: 520 },
+      { name: "Пожирач Світів", acc: "Пожирача", emoji: "🕳️", maxHp: 2900, attack: 330, baseGold: 580 }
+    ], boss: { name: "Істинний Бог Безодні", acc: "Істинного Бога", emoji: "🌌", maxHp: 5500, attack: 300, baseGold: 3500, souls: 12 } }
   ];
 
   function getZone(floor) {
@@ -541,12 +591,13 @@
     }
   }
 
-  const SAVE_KEY = "rpg_save_abyss_v3";
+  // ---------- Player & Save ----------
+  const SAVE_KEY = "rpg_save_abyss_v4";
 
   function newPlayer() {
     return {
-      hp: 100, maxHp: 100, gold: 20, attack: 15, defense: 5, potions: 0,
-      swordLevel: 0, swordPrice: 50, armorLevel: 0, armorPrice: 40,
+      hp: 100, maxHp: 100, gold: 30, attack: 15, defense: 5, potions: 0,
+      swordLevel: 0, armorLevel: 0,
       floor: 1, runGold: 0, souls: 0, perkHpLvl: 0, perkAtkLvl: 0
     };
   }
@@ -555,6 +606,14 @@
   let enemy = makeEnemy(1);
   let busy = false;
   let playerDead = false;
+
+  function getSwordPrice(lvl) {
+    return Math.round(SWORD_BASE_PRICE * Math.pow(1.15, lvl));
+  }
+
+  function getArmorPrice(lvl) {
+    return Math.round(ARMOR_BASE_PRICE * Math.pow(1.15, lvl));
+  }
 
   function applyPerksAndMaxHp() {
     player.maxHp = 100 + (player.perkHpLvl * 10);
@@ -578,8 +637,8 @@
       const base = newPlayer();
       Object.keys(base).forEach(k => { if (Number.isFinite(saved[k])) base[k] = saved[k]; });
 
-      base.swordLevel = Math.max(0, Math.min(MAX_SWORD, Math.floor(base.swordLevel)));
-      base.armorLevel = Math.max(0, Math.min(MAX_ARMOR, Math.floor(base.armorLevel)));
+      base.swordLevel = Math.max(0, Math.min(MAX_EQUIP_LEVEL, Math.floor(base.swordLevel)));
+      base.armorLevel = Math.max(0, Math.min(MAX_EQUIP_LEVEL, Math.floor(base.armorLevel)));
       base.potions = Math.max(0, Math.floor(base.potions));
       base.floor = Math.max(1, Math.floor(base.floor));
       base.gold = Math.max(0, base.gold);
@@ -594,6 +653,7 @@
     } catch (e) { player = newPlayer(); applyPerksAndMaxHp(); }
   }
 
+  // ---------- DOM Elements ----------
   const $ = id => document.getElementById(id);
   const ui = {
     floor: $("floor"),
@@ -605,12 +665,12 @@
     swordName: $("sword-name"), swordBonus: $("sword-bonus"), slotSword: $("slot-sword"),
     armorName: $("armor-name"), armorBonus: $("armor-bonus"), slotArmor: $("slot-armor"),
     shopPotionPrice: $("shop-potion-price"),
-    shopSwordName: $("shop-sword-name"), shopSwordPrice: $("shop-sword-price"),
-    shopArmorName: $("shop-armor-name"), shopArmorPrice: $("shop-armor-price"),
+    shopSwordName: $("shop-sword-name"), shopSwordPrice: $("shop-sword-price"), shopSwordSub: $("shop-sword-sub"),
+    shopArmorName: $("shop-armor-name"), shopArmorPrice: $("shop-armor-price"), shopArmorSub: $("shop-armor-sub"),
     btnAttack: $("btn-attack"), btnPotion: $("btn-potion"),
     btnBuyPotion: $("btn-buy-potion"), btnBuySword: $("btn-buy-sword"), btnBuyArmor: $("btn-buy-armor"),
     soulCount: $("soul-count"), perkHpLvl: $("perk-hp-lvl"), perkAtkLvl: $("perk-atk-lvl"),
-    btnBuyPerkHp: $("btn-buy-perk-hp"), btnBuyPerkAtk: $("btn-buy-perk-atk"),
+    btnBuyPerkHp: $("btn-buy-perk-hp"), btnBuyPerkAtk: $("btn-buy-perk-atk"), btnConvertGold: $("btn-convert-gold"),
     death: $("death-screen"), deathFloors: $("death-floors"), deathGold: $("death-gold"), btnRespawn: $("btn-respawn")
   };
 
@@ -626,6 +686,7 @@
   }
 
   function shake(el) {
+    if (!el) return;
     el.classList.remove("shake");
     void el.offsetWidth;
     el.classList.add("shake");
@@ -633,6 +694,7 @@
   }
 
   function floatText(portrait, text, extraClass) {
+    if (!portrait) return;
     const s = document.createElement("span");
     s.className = "float" + (extraClass ? " " + extraClass : "");
     s.textContent = text;
@@ -645,6 +707,7 @@
     return 10 + (player.floor * 2);
   }
 
+  // ---------- UI Update ----------
   function updateUI() {
     const zone = getZone(player.floor);
     document.body.style.backgroundColor = zone.bgColor;
@@ -676,23 +739,26 @@
     applyPerksAndMaxHp();
     ui.statAttack.textContent = player.attack;
     ui.statDefense.textContent = player.defense;
+    
     const sl = player.swordLevel, al = player.armorLevel;
-    ui.swordName.textContent = swords[sl];
-    ui.swordBonus.textContent = sl > 0 ? "+" + (sl * SWORD_BONUS) + " до атаки" : "";
+    ui.swordName.textContent = "Рівень " + sl;
+    ui.swordBonus.textContent = sl > 0 ? "+" + (sl * SWORD_BONUS) + " до атаки" : "Базовий меч";
     ui.slotSword.classList.toggle("filled", sl > 0);
-    ui.armorName.textContent = armors[al];
-    ui.armorBonus.textContent = al > 0 ? "+" + (al * ARMOR_BONUS) + " до захисту" : "";
+    ui.armorName.textContent = "Рівень " + al;
+    ui.armorBonus.textContent = al > 0 ? "+" + (al * ARMOR_BONUS) + " до захисту" : "Базова броня";
     ui.slotArmor.classList.toggle("filled", al > 0);
 
     ui.shopPotionPrice.textContent = getPotionPrice() + " золота";
 
-    const swordMax = sl >= MAX_SWORD, armorMax = al >= MAX_ARMOR;
-    ui.shopSwordName.textContent = swordMax ? "Меч вдосконалено" : swords[sl + 1];
-    ui.shopSwordPrice.textContent = swordMax ? "Максимальний рівень" : player.swordPrice + " золота";
-    ui.btnBuySword.disabled = swordMax;
-    ui.shopArmorName.textContent = armorMax ? "Броню вдосконалено" : armors[al + 1];
-    ui.shopArmorPrice.textContent = armorMax ? "Максимальний рівень" : player.armorPrice + " золота";
-    ui.btnBuyArmor.disabled = armorMax;
+    const sPrice = getSwordPrice(sl);
+    ui.shopSwordName.textContent = `🗡️ Прокачка Меча (Рв. ${sl + 1})`;
+    ui.shopSwordPrice.textContent = sPrice + " золота";
+    ui.shopSwordSub.textContent = `Поточний бонус: +${sl * SWORD_BONUS} до атаки`;
+
+    const aPrice = getArmorPrice(al);
+    ui.shopArmorName.textContent = `👕 Прокачка Броні (Рв. ${al + 1})`;
+    ui.shopArmorPrice.textContent = aPrice + " золота";
+    ui.shopArmorSub.textContent = `Поточний бонус: +${al * ARMOR_BONUS} до захисту`;
 
     ui.perkHpLvl.textContent = player.perkHpLvl;
     ui.perkAtkLvl.textContent = player.perkAtkLvl;
@@ -702,6 +768,7 @@
     ui.btnPotion.textContent = "Зілля (" + player.potions + ")";
   }
 
+  // ---------- Combat ----------
   function playerAttack() {
     if (busy || playerDead) return;
     busy = true;
@@ -726,7 +793,7 @@
     player.hp = Math.max(0, player.hp - incomingDamage);
 
     shake(ui.playerShell);
-    floatText(ui.playerPortrait, "-" + incomingDamage);
+    floatText(ui.playerPortrait, "-" + incomingDamage, "player-dmg");
     addLog(enemy.name + " вдарив тебе на " + incomingDamage + " шкоди (заблоковано " + blocked + ")");
     haptic("impact", "light");
 
@@ -795,12 +862,12 @@
   function usePotion() {
     if (playerDead) return;
     if (player.potions === 0) {
-      addLog("У тебе немає зілль! Купи їх у крамниці");
+      showToast("У тебе немає зілль! Купи їх у крамниці.");
       haptic("notify", "warning");
       return;
     }
     if (player.hp >= player.maxHp) {
-      addLog("У тебе вже повне здоров’я");
+      showToast("У тебе вже повне здоров’я!");
       return;
     }
     const healAmount = Math.round(player.maxHp * 0.5);
@@ -816,65 +883,98 @@
 
   function buyPotion() {
     const cost = getPotionPrice();
-    if (player.gold < cost) { notify("Недостатньо золота!"); return; }
+    if (player.gold < cost) {
+      const missing = cost - player.gold;
+      showToast(`Недостатньо золота! Не вистачає ${missing} монет.`);
+      return;
+    }
     player.gold -= cost;
     player.potions += 1;
     haptic("notify", "success");
+    showToast("Зілля успішно куплено!");
     updateUI();
     saveGame();
   }
 
   function buySword() {
-    if (player.swordLevel >= MAX_SWORD) { notify("Меч вже досяг максимального рівня!"); return; }
-    if (player.gold < player.swordPrice) { notify("Недостатньо золота!"); return; }
-    player.gold -= player.swordPrice;
+    const cost = getSwordPrice(player.swordLevel);
+    if (player.gold < cost) {
+      const missing = cost - player.gold;
+      showToast(`Недостатньо золота! Не вистачає ${missing} монет.`);
+      return;
+    }
+    player.gold -= cost;
     player.swordLevel += 1;
-    player.swordPrice += SWORD_PRICE_STEP;
     applyPerksAndMaxHp();
     haptic("notify", "success");
+    showToast("Меч успішно покращено! Атака зросла!");
     updateUI();
     saveGame();
-    notify("Меч куплено! Атака зросла!");
   }
 
   function buyArmor() {
-    if (player.armorLevel >= MAX_ARMOR) { notify("Броня вже досягла максимального рівня!"); return; }
-    if (player.gold < player.armorPrice) { notify("Недостатньо золота!"); return; }
-    player.gold -= player.armorPrice;
+    const cost = getArmorPrice(player.armorLevel);
+    if (player.gold < cost) {
+      const missing = cost - player.gold;
+      showToast(`Недостатньо золота! Не вистачає ${missing} монет.`);
+      return;
+    }
+    player.gold -= cost;
     player.armorLevel += 1;
-    player.armorPrice += ARMOR_PRICE_STEP;
     applyPerksAndMaxHp();
     haptic("notify", "success");
+    showToast("Броню успішно покращено! Захист зріс!");
     updateUI();
     saveGame();
-    notify("Броню куплено! Захист зріс!");
   }
 
   function buyPerkHp() {
     const cost = 5;
-    if (player.souls < cost) { notify("Недостатньо Душ!"); return; }
+    if (player.souls < cost) {
+      showToast(`Недостатньо Душ! Не вистачає ${cost - player.souls} Душ.`);
+      return;
+    }
     player.souls -= cost;
     player.perkHpLvl += 1;
     applyPerksAndMaxHp();
     player.hp = player.maxHp;
     haptic("notify", "success");
+    showToast("Благословення Життя прийнято! Макс. HP зросло.");
     updateUI();
     saveGame();
-    notify("Благословення Життя прийнято! Макс. HP зросло.");
   }
 
   function buyPerkAtk() {
     const cost = 8;
-    if (player.souls < cost) { notify("Недостатньо Душ!"); return; }
+    if (player.souls < cost) {
+      showToast(`Недостатньо Душ! Не вистачає ${cost - player.souls} Душ.`);
+      return;
+    }
     player.souls -= cost;
     player.perkAtkLvl += 1;
     applyPerksAndMaxHp();
     haptic("notify", "success");
+    showToast("Благословення Сили прийнято! Базова атака зросла.");
     updateUI();
     saveGame();
-    notify("Благословення Сили прийнято! Базова атака зросла.");
   }
 
+  function convertGoldToSoul() {
+    const cost = 500;
+    if (player.gold < cost) {
+      const missing = cost - player.gold;
+      showToast(`Недостатньо золота! Не вистачає ${missing} монет.`);
+      return;
+    }
+    player.gold -= cost;
+    player.souls += 1;
+    haptic("notify", "success");
+    showToast("Успішно обміняно 500 золота на 1 Душу!");
+    updateUI();
+    saveGame();
+  }
+
+  // ---------- Listeners ----------
   ui.btnAttack.addEventListener("click", playerAttack);
   ui.btnPotion.addEventListener("click", usePotion);
   ui.btnBuyPotion.addEventListener("click", buyPotion);
@@ -882,6 +982,7 @@
   ui.btnBuyArmor.addEventListener("click", buyArmor);
   ui.btnBuyPerkHp.addEventListener("click", buyPerkHp);
   ui.btnBuyPerkAtk.addEventListener("click", buyPerkAtk);
+  ui.btnConvertGold.addEventListener("click", convertGoldToSoul);
   ui.btnRespawn.addEventListener("click", respawn);
 
   loadGame();
@@ -890,4 +991,4 @@
   if (player.hp <= 0) showDeath();
 </script>
 </body>
-            </html>
+          </html>
