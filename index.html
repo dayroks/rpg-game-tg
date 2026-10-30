@@ -45,6 +45,137 @@
     padding-top: env(safe-area-inset-top, 0px);
   }
 
+  /* ---------- Screens General ---------- */
+  .screen {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ---------- Main Menu ---------- */
+  #main-menu {
+    background-image: url('img/bg-menu.png');
+    background-size: cover;
+    background-position: center top;
+    position: relative;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .menu-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.8) 60%, rgba(10,10,10,1) 100%);
+    z-index: 1;
+  }
+
+  .menu-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+  }
+
+  .menu-header {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .user-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid var(--ember-dim);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: var(--bone);
+    margin-bottom: 12px;
+  }
+
+  .game-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--ember);
+    text-shadow: 0 0 18px rgba(212, 169, 71, 0.6), 0 4px 8px rgba(0,0,0,0.9);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto 30px;
+  }
+
+  .btn-menu {
+    padding: 16px;
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+  }
+
+  /* ---------- Map Screen ---------- */
+  #map-screen {
+    padding: 20px 16px;
+    gap: 16px;
+  }
+
+  .map-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .location-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-radius: var(--radius);
+    background: var(--glass);
+    border: 1px solid var(--ember-dim);
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  .location-card:active {
+    transform: scale(0.98);
+  }
+
+  .location-card.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: rgba(255,255,255,0.1);
+  }
+
+  .location-info h4 {
+    font-size: 1.1rem;
+    color: var(--ember);
+    margin-bottom: 4px;
+  }
+
+  .location-info p {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
   /* ---------- Toast Notification ---------- */
   .toast-notification {
     position: fixed;
@@ -68,16 +199,14 @@
     transform: translateX(-50%) translateY(0);
   }
 
-  /* ---------- Screens ---------- */
-  #screens {
+  /* ---------- Tabs ---------- */
+  #screens-container {
     flex: 1;
     min-height: 0;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
   }
   .tab { display: none; flex-direction: column; gap: 12px; padding: 14px 14px 20px; }
   .tab.active { display: flex; flex: 1 0 auto; }
@@ -96,7 +225,7 @@
     text-shadow: 0 0 14px rgba(212, 169, 71, 0.35); text-align: center; padding-top: 4px;
   }
 
-  /* ---------- Battle Scene (Clash Royale Style) ---------- */
+  /* ---------- Battle Scene ---------- */
   .battle-scene {
     position: relative;
     width: 100%;
@@ -130,6 +259,22 @@
   }
   .player-sprite { left: 20px; height: 170px; }
   .enemy-sprite { right: 20px; }
+
+  /* Attack Animations (Juice) */
+  @keyframes player-lunge {
+    0% { transform: translateX(0) scale(1); }
+    30% { transform: translateX(60px) scale(1.05); }
+    50% { transform: translateX(60px) scale(1.05); }
+    100% { transform: translateX(0) scale(1); }
+  }
+  .attacking-player { animation: player-lunge 0.4s ease-in-out; }
+
+  @keyframes enemy-knockback {
+    0% { transform: translateX(0); filter: brightness(1); }
+    50% { transform: translateX(20px); filter: brightness(2) drop-shadow(0px 15px 10px rgba(255,0,0,0.8)); }
+    100% { transform: translateX(0); filter: brightness(1); }
+  }
+  .hit-enemy { animation: enemy-knockback 0.3s ease-in-out; }
 
   /* Shake animation */
   @keyframes shake {
@@ -207,7 +352,6 @@
   .btn.small { flex: none; padding: 9px 12px; font-size: 0.8rem; white-space: nowrap; }
   .tab > .btn { flex: none; width: 100%; }
   .btn:disabled { opacity: 0.4; pointer-events: none; }
-  .btn:focus-visible, .nav-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
 
   /* ---------- Hero ---------- */
   .panel { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
@@ -294,160 +438,212 @@
 <div id="toast" class="toast-notification"></div>
 
 <div id="app">
-  <main id="screens">
 
-    <!-- ⚔️ БІЙ -->
-    <section class="tab active" id="tab-arena" role="tabpanel" aria-labelledby="nav-arena">
-      <div class="battle-scene">
-        <div class="floor" id="floor">Етаж 1 | Руїни</div>
-        <div class="gold js-gold">🪙 30</div>
-        <img id="battle-bg" src="img/bg-ruins.png" class="bg-image" alt="Фон">
-        <img id="player-img" src="img/player.png" class="battle-sprite player-sprite" alt="Герой">
-        <img id="enemy-img" src="img/slime.png" class="battle-sprite enemy-sprite" alt="Ворог">
+  <!-- 🏠 ГОЛОВНЕ МЕНЮ -->
+  <div id="main-menu" class="screen">
+    <div class="menu-overlay"></div>
+    <div class="menu-content">
+      <div class="menu-header">
+        <div class="user-badge" id="user-nickname">Мандрівник</div>
+        <h1 class="game-title">Echoes of the Abyss</h1>
       </div>
+      <div class="menu-actions">
+        <button class="btn btn-menu attack" id="btn-play" type="button">⚔️ ГРАТИ</button>
+        <button class="btn btn-menu" id="btn-map" type="button">🗺️ МАПА</button>
+      </div>
+    </div>
+  </div>
 
-      <div class="glass fighter-card">
-        <div class="name" id="enemy-name">Слиз</div>
-        <div class="hp">
-          <div class="hp-track"><div class="hp-fill enemy" id="enemy-hp-fill"></div></div>
-          <div class="hp-text" id="enemy-hp-text">HP 35/35</div>
+  <!-- 🗺️ ЕКРАН МАПИ -->
+  <div id="map-screen" class="screen" style="display: none;">
+    <div class="map-header">
+      <h2>Локації</h2>
+      <button class="btn small" id="btn-back-menu" type="button">Назад</button>
+    </div>
+
+    <div class="location-card" id="loc-ruins">
+      <div class="location-info">
+        <h4>🏛️ Руїни</h4>
+        <p>Початкові розвалини давнього замку. Етапи 1-15</p>
+      </div>
+      <span>▶</span>
+    </div>
+
+    <div class="location-card locked">
+      <div class="location-info">
+        <h4>⛏️ Шахти</h4>
+        <p>Закинуті копальні. Етапи 16-30</p>
+      </div>
+      <span>🔒</span>
+    </div>
+
+    <div class="location-card locked">
+      <div class="location-info">
+        <h4>🕸️ Печери</h4>
+        <p>Темні тунелі безодні. Етапи 31-45</p>
+      </div>
+      <span>🔒</span>
+    </div>
+  </div>
+
+  <!-- ⚔️ БОЙОВИЙ ЕКРАН ТА ВКАДКИ -->
+  <div id="battle-screen" class="screen" style="display: none;">
+    <main id="screens-container">
+
+      <!-- ⚔️ БІЙ -->
+      <section class="tab active" id="tab-arena" role="tabpanel" aria-labelledby="nav-arena">
+        <div class="battle-scene">
+          <div class="floor" id="floor">Етаж 1 | Руїни</div>
+          <div class="gold js-gold">🪙 30</div>
+          <img id="battle-bg" src="img/bg-ruins.png" class="bg-image" alt="Фон">
+          <img id="player-img" src="img/player.png" class="battle-sprite player-sprite" alt="Герой">
+          <img id="enemy-img" src="img/slime.png" class="battle-sprite enemy-sprite" alt="Ворог">
         </div>
-      </div>
 
-      <div class="glass fighter-card">
-        <div class="name">Мандрівник</div>
-        <div class="hp">
-          <div class="hp-track"><div class="hp-fill player" id="player-hp-fill"></div></div>
-          <div class="hp-text" id="player-hp-text">HP 100/100</div>
-        </div>
-      </div>
-
-      <div class="btn-row">
-        <button class="btn attack" id="btn-attack" type="button">Атакувати</button>
-        <button class="btn" id="btn-potion" type="button">Зілля (0)</button>
-      </div>
-    </section>
-
-    <!-- 🛡️ ГЕРОЙ -->
-    <section class="tab" id="tab-hero" role="tabpanel" aria-labelledby="nav-hero">
-      <div class="glass panel">
-        <h3>Характеристики</h3>
-        <div>
-          <div class="stat"><span>Атака</span><b id="stat-attack">15</b></div>
-          <div class="stat"><span>Захист</span><b id="stat-defense">5</b></div>
-          <div class="stat"><span>Крит</span><b>10%</b></div>
-          <div class="stat"><span>Золото</span><b class="js-gold">🪙 30</b></div>
-        </div>
-      </div>
-
-      <div class="glass panel">
-        <h3>Екіпіровка</h3>
-        <div class="slots">
-          <div class="slot" id="slot-sword">
-            <span class="slot-label">Меч</span>
-            <span class="slot-name" id="sword-name">Рівень 0</span>
-            <span class="slot-bonus" id="sword-bonus"></span>
+        <div class="glass fighter-card">
+          <div class="name" id="enemy-name">Слиз</div>
+          <div class="hp">
+            <div class="hp-track"><div class="hp-fill enemy" id="enemy-hp-fill"></div></div>
+            <div class="hp-text" id="enemy-hp-text">HP 35/35</div>
           </div>
-          <div class="slot" id="slot-armor">
-            <span class="slot-label">Броня</span>
-            <span class="slot-name" id="armor-name">Рівень 0</span>
-            <span class="slot-bonus" id="armor-bonus"></span>
+        </div>
+
+        <div class="glass fighter-card">
+          <div class="name">Мандрівник</div>
+          <div class="hp">
+            <div class="hp-track"><div class="hp-fill player" id="player-hp-fill"></div></div>
+            <div class="hp-text" id="player-hp-text">HP 100/100</div>
           </div>
         </div>
-      </div>
 
-      <div class="glass panel">
-        <h3>Інвентар</h3>
-        <div class="stat"><span>🧪 Зілля:</span><b><span class="js-potions">0</span> шт.</b></div>
-      </div>
-    </section>
-
-    <!-- 🧪 КРАМНИЦЯ -->
-    <section class="tab" id="tab-shop" role="tabpanel" aria-labelledby="nav-shop">
-      <h2>Крамниця</h2>
-
-      <div class="glass wallet"><span>Твоє золото</span><b class="js-gold">🪙 30</b></div>
-
-      <div class="glass item">
-        <div class="ico">🧪</div>
-        <div class="info">
-          <div class="t">Зілля HP (50% макс. HP)</div>
-          <div class="p" id="shop-potion-price">12 золота</div>
-          <div class="sub">У тебе: <span class="js-potions">0</span> шт.</div>
+        <div class="btn-row">
+          <button class="btn attack" id="btn-attack" type="button">Атакувати</button>
+          <button class="btn" id="btn-potion" type="button">Зілля (0)</button>
         </div>
-        <button class="btn small" id="btn-buy-potion" type="button">Купити Зілля</button>
-      </div>
+      </section>
 
-      <div class="glass item">
-        <div class="ico">⚔️</div>
-        <div class="info">
-          <div class="t" id="shop-sword-name">🗡️ Прокачка Меча (Рв. 1)</div>
-          <div class="p" id="shop-sword-price">50 золота</div>
-          <div class="sub" id="shop-sword-sub">Поточний бонус: +0</div>
+      <!-- 🛡️ ГЕРОЙ -->
+      <section class="tab" id="tab-hero" role="tabpanel" aria-labelledby="nav-hero">
+        <div class="glass panel">
+          <h3>Характеристики</h3>
+          <div>
+            <div class="stat"><span>Атака</span><b id="stat-attack">15</b></div>
+            <div class="stat"><span>Захист</span><b id="stat-defense">5</b></div>
+            <div class="stat"><span>Крит</span><b>10%</b></div>
+            <div class="stat"><span>Золото</span><b class="js-gold">🪙 30</b></div>
+          </div>
         </div>
-        <button class="btn small" id="btn-buy-sword" type="button">Покращити Меч</button>
-      </div>
 
-      <div class="glass item">
-        <div class="ico">🛡️</div>
-        <div class="info">
-          <div class="t" id="shop-armor-name">👕 Прокачка Броні (Рв. 1)</div>
-          <div class="p" id="shop-armor-price">40 золота</div>
-          <div class="sub" id="shop-armor-sub">Поточний захист: +0</div>
+        <div class="glass panel">
+          <h3>Екіпіровка</h3>
+          <div class="slots">
+            <div class="slot" id="slot-sword">
+              <span class="slot-label">Меч</span>
+              <span class="slot-name" id="sword-name">Рівень 0</span>
+              <span class="slot-bonus" id="sword-bonus"></span>
+            </div>
+            <div class="slot" id="slot-armor">
+              <span class="slot-label">Броня</span>
+              <span class="slot-name" id="armor-name">Рівень 0</span>
+              <span class="slot-bonus" id="armor-bonus"></span>
+            </div>
+          </div>
         </div>
-        <button class="btn small" id="btn-buy-armor" type="button">Покращити Броню</button>
-      </div>
-    </section>
 
-    <!-- ✨ ВІВТАР ДУШ -->
-    <section class="tab" id="tab-altar" role="tabpanel" aria-labelledby="nav-altar">
-      <h2>Вівтар Душ</h2>
-
-      <div class="glass panel">
-        <div class="altar-glyph">✨</div>
-        <p class="altar-text">Витрачай Душі на вічні благословення, що не згорають після смерті.</p>
-        <div class="stat" style="margin-top: 8px;"><span>Твої Душі</span><b id="soul-count">👻 0</b></div>
-      </div>
-
-      <div class="glass item">
-        <div class="ico">🔄</div>
-        <div class="info">
-          <div class="t">Обмін Золота на Душу</div>
-          <div class="p">500 золота</div>
-          <div class="sub">+1 Душа</div>
+        <div class="glass panel">
+          <h3>Інвентар</h3>
+          <div class="stat"><span>🧪 Зілля:</span><b><span class="js-potions">0</span> шт.</b></div>
         </div>
-        <button class="btn small" id="btn-convert-gold" type="button">Обміняти</button>
-      </div>
+      </section>
 
-      <div class="glass item">
-        <div class="ico">❤️</div>
-        <div class="info">
-          <div class="t">Благословення Життя</div>
-          <div class="p">5 Душ</div>
-          <div class="sub">+10 до макс. HP (Рівень: <span id="perk-hp-lvl">0</span>)</div>
+      <!-- 🧪 КРАМНИЦЯ -->
+      <section class="tab" id="tab-shop" role="tabpanel" aria-labelledby="nav-shop">
+        <h2>Крамниця</h2>
+
+        <div class="glass wallet"><span>Твоє золото</span><b class="js-gold">🪙 30</b></div>
+
+        <div class="glass item">
+          <div class="ico">🧪</div>
+          <div class="info">
+            <div class="t">Зілля HP (50% макс. HP)</div>
+            <div class="p" id="shop-potion-price">12 золота</div>
+            <div class="sub">У тебе: <span class="js-potions">0</span> шт.</div>
+          </div>
+          <button class="btn small" id="btn-buy-potion" type="button">Купити Зілля</button>
         </div>
-        <button class="btn small" id="btn-buy-perk-hp" type="button">Покращити</button>
-      </div>
 
-      <div class="glass item">
-        <div class="ico">⚔️</div>
-        <div class="info">
-          <div class="t">Благословення Сили</div>
-          <div class="p">8 Душ</div>
-          <div class="sub">+2 до базової атаки (Рівень: <span id="perk-atk-lvl">0</span>)</div>
+        <div class="glass item">
+          <div class="ico">⚔️</div>
+          <div class="info">
+            <div class="t" id="shop-sword-name">🗡️ Прокачка Меча (Рв. 1)</div>
+            <div class="p" id="shop-sword-price">100 золота</div>
+            <div class="sub" id="shop-sword-sub">Поточний бонус: +0</div>
+          </div>
+          <button class="btn small" id="btn-buy-sword" type="button">Покращити Меч</button>
         </div>
-        <button class="btn small" id="btn-buy-perk-atk" type="button">Покращити</button>
-      </div>
-    </section>
 
-  </main>
+        <div class="glass item">
+          <div class="ico">🛡️</div>
+          <div class="info">
+            <div class="t" id="shop-armor-name">👕 Прокачка Броні (Рв. 1)</div>
+            <div class="p" id="shop-armor-price">80 золота</div>
+            <div class="sub" id="shop-armor-sub">Поточний захист: +0</div>
+          </div>
+          <button class="btn small" id="btn-buy-armor" type="button">Покращити Броню</button>
+        </div>
+      </section>
 
-  <nav id="nav" role="tablist" aria-label="Головне меню">
-    <button class="nav-btn active" id="nav-arena" role="tab" aria-selected="true" data-tab="arena" type="button"><span class="ico">⚔️</span><span>Бій</span></button>
-    <button class="nav-btn" id="nav-hero" role="tab" aria-selected="false" data-tab="hero" type="button"><span class="ico">🛡️</span><span>Герой</span></button>
-    <button class="nav-btn" id="nav-shop" role="tab" aria-selected="false" data-tab="shop" type="button"><span class="ico">🧪</span><span>Крамниця</span></button>
-    <button class="nav-btn" id="nav-altar" role="tab" aria-selected="false" data-tab="altar" type="button"><span class="ico">✨</span><span>Вівтар</span></button>
-  </nav>
+      <!-- ✨ ВІВТАР ДУШ -->
+      <section class="tab" id="tab-altar" role="tabpanel" aria-labelledby="nav-altar">
+        <h2>Вівтар Душ</h2>
+
+        <div class="glass panel">
+          <div class="altar-glyph">✨</div>
+          <p class="altar-text">Витрачай Душі на вічні благословення, що не згорають після смерті.</p>
+          <div class="stat" style="margin-top: 8px;"><span>Твої Душі</span><b id="soul-count">👻 0</b></div>
+        </div>
+
+        <div class="glass item">
+          <div class="ico">🔄</div>
+          <div class="info">
+            <div class="t">Обмін Золота на Душу</div>
+            <div class="p">500 золота</div>
+            <div class="sub">+1 Душа</div>
+          </div>
+          <button class="btn small" id="btn-convert-gold" type="button">Обміняти</button>
+        </div>
+
+        <div class="glass item">
+          <div class="ico">❤️</div>
+          <div class="info">
+            <div class="t">Благословення Життя</div>
+            <div class="p">5 Душ</div>
+            <div class="sub">+10 до макс. HP (Рівень: <span id="perk-hp-lvl">0</span>)</div>
+          </div>
+          <button class="btn small" id="btn-buy-perk-hp" type="button">Покращити</button>
+        </div>
+
+        <div class="glass item">
+          <div class="ico">⚔️</div>
+          <div class="info">
+            <div class="t">Благословення Сили</div>
+            <div class="p">8 Душ</div>
+            <div class="sub">+2 до базової атаки (Рівень: <span id="perk-atk-lvl">0</span>)</div>
+          </div>
+          <button class="btn small" id="btn-buy-perk-atk" type="button">Покращити</button>
+        </div>
+      </section>
+
+    </main>
+
+    <nav id="nav" role="tablist" aria-label="Головне меню">
+      <button class="nav-btn active" id="nav-arena" role="tab" aria-selected="true" data-tab="arena" type="button"><span class="ico">⚔️</span><span>Бій</span></button>
+      <button class="nav-btn" id="nav-hero" role="tab" aria-selected="false" data-tab="hero" type="button"><span class="ico">🛡️</span><span>Герой</span></button>
+      <button class="nav-btn" id="nav-shop" role="tab" aria-selected="false" data-tab="shop" type="button"><span class="ico">🧪</span><span>Крамниця</span></button>
+      <button class="nav-btn" id="nav-altar" role="tab" aria-selected="false" data-tab="altar" type="button"><span class="ico">✨</span><span>Вівтар</span></button>
+    </nav>
+  </div>
+
 </div>
 
 <div id="death-screen" role="alertdialog" aria-labelledby="death-title">
@@ -463,7 +659,14 @@
   // ---------- Telegram & Toast ----------
   const tg = window.Telegram && window.Telegram.WebApp;
   if (tg) {
-    try { tg.ready(); tg.expand(); tg.setHeaderColor("#120c1a"); tg.setBackgroundColor("#0b0810"); } catch (e) {}
+    try { 
+      tg.ready(); 
+      tg.expand(); 
+      tg.setHeaderColor("#120c1a"); 
+      tg.setBackgroundColor("#0b0810"); 
+      const username = tg.initDataUnsafe?.user?.first_name || "Мандрівник";
+      document.getElementById("user-nickname").textContent = username;
+    } catch (e) {}
   }
 
   function haptic(kind, style) {
@@ -485,6 +688,15 @@
     }, 2800);
   }
 
+  // ---------- Navigation / Screens ----------
+  function showScreen(id) {
+    document.querySelectorAll(".screen").forEach(s => s.style.display = "none");
+    const target = document.getElementById(id);
+    if (target) {
+      target.style.display = "flex";
+    }
+  }
+
   // ---------- Tabs ----------
   const navButtons = document.querySelectorAll(".nav-btn");
   const tabs = document.querySelectorAll(".tab");
@@ -500,8 +712,8 @@
   navButtons.forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
 
   // ---------- Game Data & Balance ----------
-  const SWORD_BONUS = 3, SWORD_BASE_PRICE = 50;
-  const ARMOR_BONUS = 2, ARMOR_BASE_PRICE = 40;
+  const SWORD_BONUS = 3, SWORD_BASE_PRICE = 100;
+  const ARMOR_BONUS = 2, ARMOR_BASE_PRICE = 80;
   const MAX_EQUIP_LEVEL = 100;
 
   const ZONES = [
@@ -521,32 +733,7 @@
     { min: 31, max: 45, name: "Печери", bgColor: "#091216", enemies: [
       { name: "Кажанець", acc: "Кажанця", image: "img/wolf.png", maxHp: 180, attack: 35, baseGold: 60 },
       { name: "Печерний Троль", acc: "Троля", image: "img/goblin.png", maxHp: 220, attack: 40, baseGold: 75 }
-    ], boss: { name: "Жах Безодні", acc: "Жаху Безодні", image: "img/boss-goblin.png", maxHp: 800, attack: 62, baseGold: 450, souls: 3 } },
-
-    { min: 46, max: 60, name: "Крига", bgColor: "#0a151a", enemies: [
-      { name: "Крижаний Дух", acc: "Духа", image: "img/skeleton.png", maxHp: 320, attack: 55, baseGold: 95 },
-      { name: "Єті", acc: "Єті", image: "img/goblin.png", maxHp: 400, attack: 65, baseGold: 120 }
-    ], boss: { name: "Крижана Королева", acc: "Крижаної Королеви", image: "img/boss-goblin.png", maxHp: 1300, attack: 85, baseGold: 700, souls: 4 } },
-
-    { min: 61, max: 75, name: "Пекло", bgColor: "#1a0b0b", enemies: [
-      { name: "Бес", acc: "Беса", image: "img/goblin.png", maxHp: 520, attack: 82, baseGold: 140 },
-      { name: "Демон", acc: "Демона", image: "img/skeleton.png", maxHp: 650, attack: 98, baseGold: 180 }
-    ], boss: { name: "Архідемон", acc: "Архідемона", image: "img/boss-goblin.png", maxHp: 1900, attack: 115, baseGold: 1050, souls: 5 } },
-
-    { min: 76, max: 90, name: "Кузні", bgColor: "#1c1208", enemies: [
-      { name: "Вогняний Механізм", acc: "Механізма", image: "img/slime.png", maxHp: 800, attack: 118, baseGold: 210 },
-      { name: "Залізний Титан", acc: "Титана", image: "img/skeleton.png", maxHp: 1000, attack: 140, baseGold: 260 }
-    ], boss: { name: "Володар Кузень", acc: "Володаря Кузень", image: "img/boss-goblin.png", maxHp: 2700, attack: 150, baseGold: 1500, souls: 6 } },
-
-    { min: 91, max: 100, name: "Храм", bgColor: "#14101c", enemies: [
-      { name: "Фанатик", acc: "Фанатика", image: "img/goblin.png", maxHp: 1200, attack: 175, baseGold: 310 },
-      { name: "Храмовий Страж", acc: "Стража", image: "img/skeleton.png", maxHp: 1400, attack: 195, baseGold: 360 }
-    ], boss: { name: "Аватар Храму", acc: "Аватара Храму", image: "img/boss-goblin.png", maxHp: 3800, attack: 190, baseGold: 2200, souls: 8 } },
-
-    { min: 101, max: 9999, name: "Порожнеча", bgColor: "#08060c", enemies: [
-      { name: "Тінь Порожнечі", acc: "Тіні", image: "img/skeleton.png", maxHp: 1700, attack: 230, baseGold: 400 },
-      { name: "Пожирач Світів", acc: "Пожирача", image: "img/wolf.png", maxHp: 2100, attack: 270, baseGold: 480 }
-    ], boss: { name: "Істинний Бог Безодні", acc: "Істинного Бога", image: "img/boss-goblin.png", maxHp: 5500, attack: 280, baseGold: 3500, souls: 12 } }
+    ], boss: { name: "Жах Безодні", acc: "Жаху Безодні", image: "img/boss-goblin.png", maxHp: 800, attack: 62, baseGold: 450, souls: 3 } }
   ];
 
   function getZone(floor) {
@@ -592,11 +779,11 @@
   let playerDead = false;
 
   function getSwordPrice(lvl) {
-    return Math.round(SWORD_BASE_PRICE * Math.pow(1.35, lvl));
+    return Math.floor(SWORD_BASE_PRICE * Math.pow(1.4, lvl));
   }
 
   function getArmorPrice(lvl) {
-    return Math.round(ARMOR_BASE_PRICE * Math.pow(1.35, lvl));
+    return Math.floor(ARMOR_BASE_PRICE * Math.pow(1.4, lvl));
   }
 
   function applyPerksAndMaxHp() {
@@ -661,10 +848,6 @@
   const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
   const pct = (hp, max) => Math.max(0, Math.min(100, (hp / max) * 100));
 
-  function addLog(text) {
-    // Лог бою повністю вимкнено за запитом
-  }
-
   function triggerShake(el) {
     if (!el) return;
     el.classList.remove("shake");
@@ -700,7 +883,6 @@
 
     ui.floor.textContent = `Етаж ${player.floor} | ${zone.name}`;
     
-    // Оновлення зображення ворога та індивідуальних розмірів
     ui.enemyImg.src = enemy.image || "img/slime.png";
     if (enemy.isBoss) {
       ui.enemyImg.style.height = "220px";
@@ -752,45 +934,75 @@
     ui.btnPotion.textContent = "Зілля (" + player.potions + ")";
   }
 
-  // ---------- Combat ----------
+  // ---------- Combat (Juice Animations & Logic) ----------
   function playerAttack() {
     if (busy || playerDead) return;
     busy = true;
 
-    const dmg = Math.max(1, rand(player.attack - 3, player.attack + 3));
-    enemy.hp = Math.max(0, enemy.hp - dmg);
+    // 1. Блокуємо кнопку та анімуємо випад гравця
+    ui.btnAttack.disabled = true;
+    ui.playerImg.classList.add("attacking-player");
 
-    triggerShake(ui.enemyImg);
-    floatText(ui.enemyImg, "-" + dmg);
-    haptic("impact", "medium");
+    // 2. Через 150 мс б'ємо ворога і запускаємо анімацію отримання шкоди
+    setTimeout(() => {
+      const dmg = Math.max(1, rand(player.attack - 3, player.attack + 3));
+      enemy.hp = Math.max(0, enemy.hp - dmg);
 
-    if (enemy.hp <= 0) onEnemyDefeated();
-    else setTimeout(enemyAttack, 500);
-    updateUI();
-    saveGame();
+      ui.enemyImg.classList.add("hit-enemy");
+      floatText(ui.enemyImg, "-" + dmg);
+      haptic("impact", "medium");
+      updateUI();
+
+      setTimeout(() => {
+        ui.enemyImg.classList.remove("hit-enemy");
+      }, 300);
+
+      if (enemy.hp <= 0) {
+        onEnemyDefeated();
+      }
+    }, 150);
+
+    // 3. Через 400 мс прибираємо клас випаду
+    setTimeout(() => {
+      ui.playerImg.classList.remove("attacking-player");
+    }, 400);
+
+    // 4. Через 800 мс ворог б'є у відповідь (якщо живий)
+    setTimeout(() => {
+      if (enemy.hp > 0) {
+        enemyAttack();
+      }
+    }, 800);
+
+    // 5. Через 1000 мс знімаємо блокування з кнопки
+    setTimeout(() => {
+      busy = false;
+      if (!playerDead) ui.btnAttack.disabled = false;
+      saveGame();
+    }, 1000);
   }
 
   function enemyAttack() {
-    let finalDamage = Math.floor(enemy.attack * (100 / (100 + player.defense)));
-    finalDamage = Math.max(1, finalDamage);
-    player.hp = Math.max(0, player.hp - finalDamage);
+    let damageTaken = Math.floor(enemy.attack * (100 / (100 + player.defense)));
+    damageTaken = Math.max(1, damageTaken);
+    player.hp = Math.max(0, player.hp - damageTaken);
 
     triggerShake(ui.playerImg);
-    floatText(ui.playerImg, "-" + finalDamage, "player-dmg");
+    floatText(ui.playerImg, "-" + damageTaken, "player-dmg");
     haptic("impact", "light");
 
     if (player.hp <= 0) {
       haptic("notify", "error");
       showDeath();
-    } else {
-      busy = false;
     }
     updateUI();
-    saveGame();
   }
 
   function onEnemyDefeated() {
-    const earnedGold = Math.floor(enemy.baseGold * (1 + (player.floor * 0.1)) * (0.8 + Math.random() * 0.4));
+    let earnedGold = Math.floor(enemy.baseGold * (1 + (player.floor * 0.1)));
+    if (enemy.isBoss) {
+      earnedGold *= 3;
+    }
     player.gold += earnedGold;
     player.runGold += earnedGold;
 
@@ -802,12 +1014,10 @@
     ui.enemyImg.style.opacity = "0.3";
 
     player.floor += 1;
-    saveGame();
 
     setTimeout(() => {
       enemy = makeEnemy(player.floor);
       ui.enemyImg.style.opacity = "1";
-      busy = false;
       updateUI();
     }, 1500);
   }
@@ -948,7 +1158,26 @@
     saveGame();
   }
 
-  // ---------- Listeners ----------
+  // ---------- Menu & Map Listeners ----------
+  $("btn-play").addEventListener("click", () => {
+    showScreen("battle-screen");
+    showTab("arena");
+  });
+
+  $("btn-map").addEventListener("click", () => {
+    showScreen("map-screen");
+  });
+
+  $("btn-back-menu").addEventListener("click", () => {
+    showScreen("main-menu");
+  });
+
+  $("loc-ruins").addEventListener("click", () => {
+    showScreen("battle-screen");
+    showTab("arena");
+  });
+
+  // ---------- Game Listeners ----------
   ui.btnAttack.addEventListener("click", playerAttack);
   ui.btnPotion.addEventListener("click", usePotion);
   ui.btnBuyPotion.addEventListener("click", buyPotion);
@@ -959,10 +1188,11 @@
   ui.btnConvertGold.addEventListener("click", convertGoldToSoul);
   ui.btnRespawn.addEventListener("click", respawn);
 
+  // Init
   loadGame();
   enemy = makeEnemy(player.floor);
   updateUI();
   if (player.hp <= 0) showDeath();
 </script>
 </body>
-  </html>
+        </html>
