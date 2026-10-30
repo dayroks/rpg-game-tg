@@ -96,68 +96,106 @@
     text-shadow: 0 0 14px rgba(212, 169, 71, 0.35); text-align: center; padding-top: 4px;
   }
 
-  /* ---------- Fighters ---------- */
-  .fighter { --sp: 150px; position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px; }
-  .fighter .name { font-size: 1.05rem; font-weight: 600; letter-spacing: 0.05em; }
-
-  .portrait {
-    position: relative; width: var(--sp); height: var(--sp);
-    border-radius: 12px; border: 1px solid var(--ember-dim);
-    background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.55));
-    display: flex; align-items: center; justify-content: center;
+  /* ---------- Battle Scene (Clash Royale Style) ---------- */
+  .battle-scene {
+    position: relative;
+    width: 100%;
+    height: 260px;
+    border-radius: 16px;
     overflow: hidden;
+    border: 2px solid var(--ember-dim);
+    background-color: #0a0a0a;
+    margin-bottom: 4px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
   }
-  .shell {
-    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-    transition: opacity 0.5s ease, filter 0.5s ease;
+  .bg-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    filter: brightness(0.7);
   }
-  .shell.dead { opacity: 0.22; filter: grayscale(1); }
-  .shell.shake { animation: shake 0.3s ease; }
-  .sprite {
-    font-size: calc(var(--sp) * 0.55); line-height: 1;
-    animation: bob 2.6s ease-in-out infinite;
-    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.6));
+  
+  @keyframes breathe {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
   }
-  .fighter.me .sprite { animation-delay: -1.2s; }
 
-  .enemy-sprite {
-    width: 150px;
-    height: 150px;
+  .battle-sprite {
+    position: absolute;
+    bottom: 10px;
+    height: 140px;
+    width: auto;
     object-fit: contain;
-    image-rendering: pixelated;
-    animation: bob 2.6s ease-in-out infinite;
+    z-index: 2;
+    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.8));
+    animation: breathe 3s ease-in-out infinite;
+    transition: transform 0.1s;
   }
+  .player-sprite { left: 20px; }
+  .enemy-sprite { right: 20px; }
+  .boss-sprite { height: 180px; }
+
+  /* Shake animation */
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+  }
+  .shake { animation: shake 0.3s !important; }
+
+  /* Floating Combat Text */
+  .float {
+    position: absolute;
+    top: 30%;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #ff4d4d;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(255, 77, 77, 0.5);
+    pointer-events: none;
+    animation: floatUp 1s ease-out forwards;
+    z-index: 10;
+  }
+  .float.player-dmg { color: #ffd166; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(255, 209, 102, 0.5); }
+  .float.heal { color: #6fe08c; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(111, 224, 140, 0.5); }
+
+  @keyframes floatUp {
+    from { opacity: 1; transform: translate(-50%, 0) scale(0.9); }
+    15% { transform: translate(-50%, -10px) scale(1.15); }
+    to { opacity: 0; transform: translate(-50%, -70px) scale(1); }
+  }
+
+  /* ---------- Fighters Info ---------- */
+  .fighter-card { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px; position: relative; }
+  .fighter-card .name { font-size: 1rem; font-weight: 600; letter-spacing: 0.05em; }
 
   .hp { width: 100%; max-width: 260px; }
   .hp-track {
-    height: 14px; border-radius: 10px;
+    height: 12px; border-radius: 10px;
     background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(255, 255, 255, 0.12);
   }
   .hp-fill { height: 100%; width: 100%; border-radius: 10px; transition: width 0.3s ease; }
   .hp-fill.enemy { background: linear-gradient(90deg, #7a1a1a, #e04848); box-shadow: 0 0 10px rgba(255, 70, 70, 0.75); }
   .hp-fill.player { background: linear-gradient(90deg, #2c6e42, #5fd183); box-shadow: 0 0 10px rgba(95, 209, 131, 0.7); }
-  .hp-text { margin-top: 5px; text-align: center; font-size: 0.8rem; color: var(--muted); letter-spacing: 0.08em; }
+  .hp-text { margin-top: 4px; text-align: center; font-size: 0.78rem; color: var(--muted); letter-spacing: 0.08em; }
 
   .gold {
     position: absolute; top: 10px; right: 10px; padding: 4px 10px;
     font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; color: var(--ember);
     background: rgba(0, 0, 0, 0.45); border: 1px solid var(--ember-dim); border-radius: 999px;
+    z-index: 5;
   }
-
-  /* Floating Combat Text */
-  .float {
-    position: absolute; top: 25%; transform: translateX(-50%);
-    font-size: 1.7rem; font-weight: 700; line-height: 1; color: #ff4d4d;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(255, 77, 77, 0.5);
-    pointer-events: none; animation: floatUp 1s ease-out forwards; z-index: 10;
-  }
-  .float.player-dmg { color: #ffd166; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(255, 209, 102, 0.5); }
-  .float.heal { color: #6fe08c; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(111, 224, 140, 0.5); }
 
   /* ---------- Log ---------- */
   .log {
-    max-height: 150px;
-    min-height: 80px;
+    max-height: 130px;
+    min-height: 70px;
     padding: 10px 12px;
     overflow-y: auto;
     background: var(--glass-strong);
@@ -172,11 +210,11 @@
     display: flex;
     gap: 10px;
     flex-shrink: 0;
-    padding: 6px 0;
+    padding: 4px 0;
   }
   .btn {
     flex: 1; font-family: var(--font); font-size: 0.95rem; font-weight: 700; letter-spacing: 0.06em;
-    color: var(--bone); padding: 13px 14px; border-radius: 12px; cursor: pointer;
+    color: var(--bone); padding: 12px 14px; border-radius: 12px; cursor: pointer;
     border: 1px solid var(--ember-dim);
     background: linear-gradient(180deg, rgba(212, 169, 71, 0.18), rgba(212, 169, 71, 0.06));
     transition: transform 0.12s ease, background 0.12s ease;
@@ -259,8 +297,6 @@
     background: rgba(0, 0, 0, 0.45); border: 1px solid var(--ember-dim); border-radius: 999px;
     z-index: 5;
   }
-  .sprite.boss { font-size: calc(var(--sp) * 0.82); filter: drop-shadow(0 0 14px rgba(224, 72, 72, 0.85)); }
-  .portrait.boss { border-color: #e04848; box-shadow: 0 0 18px rgba(224, 72, 72, 0.45); transform: scale(1.05); }
 
   #death-screen {
     position: fixed; inset: 0; z-index: 999; display: none;
@@ -274,20 +310,10 @@
 
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); }
-  }
-  @keyframes floatUp {
-    from { opacity: 1; transform: translate(-50%, 0) scale(0.9); }
-    15% { transform: translate(-50%, -8px) scale(1.15); }
-    to { opacity: 0; transform: translate(-50%, -70px) scale(1); }
-  }
 
-  @media (max-height: 700px) { .fighter { --sp: 110px; gap: 6px; padding: 8px; } .enemy-sprite { width: 110px; height: 110px; } }
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; }
-    .sprite, .enemy-sprite, .shell.shake { animation: none; }
+    .battle-sprite { animation: none; }
   }
 </style>
 </head>
@@ -299,11 +325,16 @@
 
     <!-- ⚔️ БІЙ -->
     <section class="tab active" id="tab-arena" role="tabpanel" aria-labelledby="nav-arena">
-      <div class="glass fighter">
+      <!-- Нова бойова сцена в стилі Clash Royale -->
+      <div class="battle-scene">
         <div class="floor" id="floor">Етаж 1 | Руїни</div>
-        <div class="portrait" id="enemy-portrait">
-          <div class="shell" id="enemy-shell"><div class="sprite" id="enemy-sprite">🟢</div></div>
-        </div>
+        <div class="gold js-gold">🪙 30</div>
+        <img id="battle-bg" src="img/bg-ruins.png" class="bg-image" alt="Фон">
+        <img id="player-img" src="img/player.png" class="battle-sprite player-sprite" alt="Герой">
+        <img id="enemy-img" src="img/slime.png" class="battle-sprite enemy-sprite" alt="Ворог">
+      </div>
+
+      <div class="glass fighter-card">
         <div class="name" id="enemy-name">Слиз</div>
         <div class="hp">
           <div class="hp-track"><div class="hp-fill enemy" id="enemy-hp-fill"></div></div>
@@ -313,11 +344,8 @@
 
       <div class="glass log" id="log" aria-live="polite"><p>Бій починається...</p></div>
 
-      <div class="glass fighter me">
-        <div class="gold js-gold">🪙 30</div>
-        <div class="portrait" id="player-portrait">
-          <div class="shell" id="player-shell"><div class="sprite">🧙‍♂️</div></div>
-        </div>
+      <div class="glass fighter-card">
+        <div class="name">Мандрівник</div>
         <div class="hp">
           <div class="hp-track"><div class="hp-fill player" id="player-hp-fill"></div></div>
           <div class="hp-text" id="player-hp-text">HP 100/100</div>
@@ -385,7 +413,7 @@
         <div class="info">
           <div class="t" id="shop-sword-name">🗡️ Прокачка Меча (Рв. 1)</div>
           <div class="p" id="shop-sword-price">50 золота</div>
-          <div class="sub" id="shop-sword-sub">Поточна атака: +0</div>
+          <div class="sub" id="shop-sword-sub">Поточний бонус: +0</div>
         </div>
         <button class="btn small" id="btn-buy-sword" type="button">Покращити Меч</button>
       </div>
@@ -501,67 +529,54 @@
   }
   navButtons.forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
 
-  // ---------- Game Data ----------
-  const SWORD_BONUS = 8, SWORD_BASE_PRICE = 50;
-  const ARMOR_BONUS = 8, ARMOR_BASE_PRICE = 40;
+  // ---------- Game Data & New Balance ----------
+  const SWORD_BONUS = 3, SWORD_BASE_PRICE = 50;
+  const ARMOR_BONUS = 2, ARMOR_BASE_PRICE = 40;
   const MAX_EQUIP_LEVEL = 100;
 
   const ZONES = [
     { min: 1, max: 15, name: "Руїни", bgColor: "#120c1a", enemies: [
-      { name: "Слиз", acc: "Слиза", image: "img/slime.png", maxHp: 36, attack: 6, baseGold: 8 },
-      { name: "Скелет", acc: "Скелета", emoji: "💀", maxHp: 54, attack: 10, baseGold: 14 },
-      { name: "Гоблін", acc: "Гобліна", emoji: "👹", maxHp: 72, attack: 13, baseGold: 20 },
-      { name: "Вовк", acc: "Вовка", emoji: "🐺", maxHp: 90, attack: 17, baseGold: 26 }
-    ], boss: { name: "Король Слизів", acc: "Короля Слизів", emoji: "👑", maxHp: 240, attack: 26, baseGold: 130, souls: 1 } },
+      { name: "Слиз", acc: "Слиза", image: "img/slime.png", maxHp: 35, attack: 6, baseGold: 10 },
+      { name: "Скелет", acc: "Скелета", image: "img/skeleton.png", maxHp: 50, attack: 9, baseGold: 15 },
+      { name: "Гоблін", acc: "Гобліна", image: "img/goblin.png", maxHp: 65, attack: 12, baseGold: 22 },
+      { name: "Вовк", acc: "Вовка", image: "img/wolf.png", maxHp: 80, attack: 15, baseGold: 28 }
+    ], boss: { name: "Ватажок Гоблінів", acc: "Ватажка Гоблінів", image: "img/boss-goblin.png", maxHp: 220, attack: 24, baseGold: 150, souls: 1 } },
 
     { min: 16, max: 30, name: "Шахти", bgColor: "#150f0a", enemies: [
-      { name: "Шахтар-Зомбі", acc: "Зомбі", emoji: "🧟", maxHp: 110, attack: 22, baseGold: 30 },
-      { name: "Печерний Павук", acc: "Павука", emoji: "🕷️", maxHp: 130, attack: 25, baseGold: 35 },
-      { name: "Крот-Мутант", acc: "Крота", emoji: "🐀", maxHp: 150, attack: 28, baseGold: 40 },
-      { name: "Шоломоносець", acc: "Шоломоносця", emoji: "🛡️", maxHp: 170, attack: 32, baseGold: 45 }
-    ], boss: { name: "Володар Шахт", acc: "Володаря Шахт", emoji: "⚒️", maxHp: 480, attack: 45, baseGold: 250, souls: 2 } },
+      { name: "Шахтар-Зомбі", acc: "Зомбі", image: "img/skeleton.png", maxHp: 100, attack: 20, baseGold: 35 },
+      { name: "Печерний Павук", acc: "Павука", image: "img/wolf.png", maxHp: 120, attack: 23, baseGold: 42 },
+      { name: "Крот-Мутант", acc: "Крота", image: "img/slime.png", maxHp: 140, attack: 26, baseGold: 50 }
+    ], boss: { name: "Володар Шахт", acc: "Володаря Шахт", image: "img/boss-goblin.png", maxHp: 450, attack: 42, baseGold: 280, souls: 2 } },
 
     { min: 31, max: 45, name: "Печери", bgColor: "#091216", enemies: [
-      { name: "Кажанець", acc: "Кажанця", emoji: "🦇", maxHp: 190, attack: 38, baseGold: 50 },
-      { name: "Печерний Троль", acc: "Троля", emoji: "🧌", maxHp: 230, attack: 43, baseGold: 60 },
-      { name: "Печерний Сталкер", acc: "Сталкера", emoji: "👁️", maxHp: 270, attack: 48, baseGold: 70 },
-      { name: "Кам'яний Голем", acc: "Голема", emoji: "🗿", maxHp: 310, attack: 53, baseGold: 80 }
-    ], boss: { name: "Жах Безодні", acc: "Жаху Безодні", emoji: "🦑", maxHp: 800, attack: 65, baseGold: 400, souls: 3 } },
+      { name: "Кажанець", acc: "Кажанця", image: "img/wolf.png", maxHp: 180, attack: 35, baseGold: 60 },
+      { name: "Печерний Троль", acc: "Троля", image: "img/goblin.png", maxHp: 220, attack: 40, baseGold: 75 }
+    ], boss: { name: "Жах Безодні", acc: "Жаху Безодні", image: "img/boss-goblin.png", maxHp: 800, attack: 62, baseGold: 450, souls: 3 } },
 
     { min: 46, max: 60, name: "Крига", bgColor: "#0a151a", enemies: [
-      { name: "Крижаний Дух", acc: "Духа", emoji: "👻", maxHp: 360, attack: 60, baseGold: 90 },
-      { name: "Сніговий Вовк", acc: "Вовка", emoji: "🐺", maxHp: 410, attack: 67, baseGold: 100 },
-      { name: "Морозний Страж", acc: "Стража", emoji: "🧊", maxHp: 460, attack: 74, baseGold: 110 },
-      { name: "Єті", acc: "Єті", emoji: "🦍", maxHp: 510, attack: 81, baseGold: 120 }
-    ], boss: { name: "Крижана Королева", acc: "Крижаної Королеви", emoji: "❄️", maxHp: 1300, attack: 90, baseGold: 600, souls: 4 } },
+      { name: "Крижаний Дух", acc: "Духа", image: "img/skeleton.png", maxHp: 320, attack: 55, baseGold: 95 },
+      { name: "Єті", acc: "Єті", image: "img/goblin.png", maxHp: 400, attack: 65, baseGold: 120 }
+    ], boss: { name: "Крижана Королева", acc: "Крижаної Королеви", image: "img/boss-goblin.png", maxHp: 1300, attack: 85, baseGold: 700, souls: 4 } },
 
     { min: 61, max: 75, name: "Пекло", bgColor: "#1a0b0b", enemies: [
-      { name: "Бес", acc: "Беса", emoji: "👺", maxHp: 580, attack: 92, baseGold: 135 },
-      { name: "Лавовий Голем", acc: "Голема", emoji: "🌋", maxHp: 650, attack: 102, baseGold: 150 },
-      { name: "Демон", acc: "Демона", emoji: "👿", maxHp: 720, attack: 112, baseGold: 165 },
-      { name: "Пекельний Гончак", acc: "Гончака", emoji: "🐕", maxHp: 790, attack: 122, baseGold: 180 }
-    ], boss: { name: "Архідемон", acc: "Архідемона", emoji: "🔥", maxHp: 1800, attack: 120, baseGold: 900, souls: 5 } },
+      { name: "Бес", acc: "Беса", image: "img/goblin.png", maxHp: 520, attack: 82, baseGold: 140 },
+      { name: "Демон", acc: "Демона", image: "img/skeleton.png", maxHp: 650, attack: 98, baseGold: 180 }
+    ], boss: { name: "Архідемон", acc: "Архідемона", image: "img/boss-goblin.png", maxHp: 1900, attack: 115, baseGold: 1050, souls: 5 } },
 
     { min: 76, max: 90, name: "Кузні", bgColor: "#1c1208", enemies: [
-      { name: "Вогняний Механізм", acc: "Механізма", emoji: "⚙️", maxHp: 890, attack: 134, baseGold: 200 },
-      { name: "Біомеханічний Вартовий", acc: "Вартового", emoji: "🤖", maxHp: 980, attack: 146, baseGold: 220 },
-      { name: "Коваль Тьми", acc: "Коваля", emoji: "🔨", maxHp: 1070, attack: 158, baseGold: 240 },
-      { name: "Залізний Титан", acc: "Титана", emoji: "🦾", maxHp: 1160, attack: 170, baseGold: 260 }
-    ], boss: { name: "Володар Кузень", acc: "Володаря Кузень", emoji: "⚡", maxHp: 2600, attack: 160, baseGold: 1300, souls: 6 } },
+      { name: "Вогняний Механізм", acc: "Механізма", image: "img/slime.png", maxHp: 800, attack: 118, baseGold: 210 },
+      { name: "Залізний Титан", acc: "Титана", image: "img/skeleton.png", maxHp: 1000, attack: 140, baseGold: 260 }
+    ], boss: { name: "Володар Кузень", acc: "Володаря Кузень", image: "img/boss-goblin.png", maxHp: 2700, attack: 150, baseGold: 1500, souls: 6 } },
 
     { min: 91, max: 100, name: "Храм", bgColor: "#14101c", enemies: [
-      { name: "Фанатик", acc: "Фанатика", emoji: "🧙", maxHp: 1300, attack: 185, baseGold: 290 },
-      { name: "Храмовий Страж", acc: "Стража", emoji: "🗿", maxHp: 1450, attack: 200, baseGold: 320 },
-      { name: "Падший Жрець", acc: "Жреця", emoji: "👁️", maxHp: 1600, attack: 215, baseGold: 350 },
-      { name: "Оракул Безодні", acc: "Оракула", emoji: "🔮", maxHp: 1750, attack: 230, baseGold: 380 }
-    ], boss: { name: "Аватар Храму", acc: "Аватара Храму", emoji: "🌟", maxHp: 3600, attack: 210, baseGold: 2000, souls: 8 } },
+      { name: "Фанатик", acc: "Фанатика", emoji: "🧙", image: "img/goblin.png", maxHp: 1200, attack: 175, baseGold: 310 },
+      { name: "Храмовий Страж", acc: "Стража", emoji: "🗿", image: "img/skeleton.png", maxHp: 1400, attack: 195, baseGold: 360 }
+    ], boss: { name: "Аватар Храму", acc: "Аватара Храму", image: "img/boss-goblin.png", maxHp: 3800, attack: 190, baseGold: 2200, souls: 8 } },
 
     { min: 101, max: 9999, name: "Порожнеча", bgColor: "#08060c", enemies: [
-      { name: "Тінь Порожнечі", acc: "Тіні", emoji: "👥", maxHp: 2000, attack: 255, baseGold: 420 },
-      { name: "Абстрактний Жах", acc: "Жаху", emoji: "🌀", maxHp: 2300, attack: 280, baseGold: 470 },
-      { name: "Ехо Безодні", acc: "Еха", emoji: "🌌", maxHp: 2600, attack: 305, baseGold: 520 },
-      { name: "Пожирач Світів", acc: "Пожирача", emoji: "🕳️", maxHp: 2900, attack: 330, baseGold: 580 }
-    ], boss: { name: "Істинний Бог Безодні", acc: "Істинного Бога", emoji: "🌌", maxHp: 5500, attack: 300, baseGold: 3500, souls: 12 } }
+      { name: "Тінь Порожнечі", acc: "Тіні", image: "img/skeleton.png", maxHp: 1700, attack: 230, baseGold: 400 },
+      { name: "Пожирач Світів", acc: "Пожирача", image: "img/wolf.png", maxHp: 2100, attack: 270, baseGold: 480 }
+    ], boss: { name: "Істинний Бог Безодні", acc: "Істинного Бога", image: "img/boss-goblin.png", maxHp: 5500, attack: 280, baseGold: 3500, souls: 12 } }
   ];
 
   function getZone(floor) {
@@ -575,24 +590,24 @@
     if (isBoss) {
       const b = zone.boss;
       return {
-        name: b.name, acc: b.acc, emoji: b.emoji, image: null,
+        name: b.name, acc: b.acc, image: b.image,
         hp: b.maxHp, maxHp: b.maxHp, attack: b.attack,
         baseGold: b.baseGold, soulsReward: b.souls, isBoss: true
       };
     } else {
       const template = zone.enemies[Math.floor(Math.random() * zone.enemies.length)];
-      const hp = Math.round(template.maxHp * (1 + floor * 0.1));
-      const attack = Math.round(template.attack + floor * 1.5);
+      // Нова формула балансу: HP = база * (1.25 ^ (floor/2)), Атака = база * (1.2 ^ (floor/2))
+      const hp = Math.round(template.maxHp * Math.pow(1.25, floor / 2));
+      const attack = Math.round(template.attack * Math.pow(1.2, floor / 2));
       return {
-        name: template.name, acc: template.acc, emoji: template.emoji,
-        image: template.image || null, hp: hp, maxHp: hp,
-        attack: attack, baseGold: template.baseGold, soulsReward: 0, isBoss: false
+        name: template.name, acc: template.acc, image: template.image || "img/slime.png",
+        hp: hp, maxHp: hp, attack: attack, baseGold: template.baseGold, soulsReward: 0, isBoss: false
       };
     }
   }
 
   // ---------- Player & Save ----------
-  const SAVE_KEY = "rpg_save_abyss_v4";
+  const SAVE_KEY = "rpg_save_abyss_v5";
 
   function newPlayer() {
     return {
@@ -608,11 +623,11 @@
   let playerDead = false;
 
   function getSwordPrice(lvl) {
-    return Math.round(SWORD_BASE_PRICE * Math.pow(1.15, lvl));
+    return Math.round(SWORD_BASE_PRICE * Math.pow(1.35, lvl));
   }
 
   function getArmorPrice(lvl) {
-    return Math.round(ARMOR_BASE_PRICE * Math.pow(1.15, lvl));
+    return Math.round(ARMOR_BASE_PRICE * Math.pow(1.35, lvl));
   }
 
   function applyPerksAndMaxHp() {
@@ -657,9 +672,9 @@
   const $ = id => document.getElementById(id);
   const ui = {
     floor: $("floor"),
-    enemySprite: $("enemy-sprite"), enemyShell: $("enemy-shell"), enemyPortrait: $("enemy-portrait"),
+    battleBg: $("battle-bg"),
+    playerImg: $("player-img"), enemyImg: $("enemy-img"),
     enemyName: $("enemy-name"), enemyFill: $("enemy-hp-fill"), enemyText: $("enemy-hp-text"),
-    playerShell: $("player-shell"), playerPortrait: $("player-portrait"),
     playerFill: $("player-hp-fill"), playerText: $("player-hp-text"),
     log: $("log"), statAttack: $("stat-attack"), statDefense: $("stat-defense"),
     swordName: $("sword-name"), swordBonus: $("sword-bonus"), slotSword: $("slot-sword"),
@@ -685,7 +700,7 @@
     ui.log.scrollTop = ui.log.scrollHeight;
   }
 
-  function shake(el) {
+  function triggerShake(el) {
     if (!el) return;
     el.classList.remove("shake");
     void el.offsetWidth;
@@ -693,13 +708,20 @@
     setTimeout(() => el.classList.remove("shake"), 300);
   }
 
-  function floatText(portrait, text, extraClass) {
-    if (!portrait) return;
+  function floatText(targetElement, text, extraClass) {
+    if (!targetElement) return;
+    const rect = targetElement.getBoundingClientRect();
+    const sceneRect = document.querySelector(".battle-scene").getBoundingClientRect();
+    
     const s = document.createElement("span");
     s.className = "float" + (extraClass ? " " + extraClass : "");
     s.textContent = text;
-    s.style.left = (35 + Math.random() * 30) + "%";
-    portrait.appendChild(s);
+    // Позиціонування відносно бойової сцени над спрайтом
+    const leftPos = (rect.left - sceneRect.left) + (rect.width / 2);
+    s.style.left = leftPos + "px";
+    s.style.top = "40px";
+    
+    document.querySelector(".battle-scene").appendChild(s);
     setTimeout(() => s.remove(), 1000);
   }
 
@@ -714,18 +736,14 @@
 
     ui.floor.textContent = `Етаж ${player.floor} | ${zone.name}`;
     
-    if (enemy.image) {
-      ui.enemyPortrait.innerHTML = `<div class="shell" id="enemy-shell"><img src="${enemy.image}" class="enemy-sprite"></div>`;
-      ui.enemyShell = $("enemy-shell");
-      ui.enemySprite = document.querySelector(".enemy-sprite");
+    // Оновлення спрайтів та стилів ворога
+    ui.enemyImg.src = enemy.image || "img/slime.png";
+    if (enemy.isBoss) {
+      ui.enemyImg.classList.add("boss-sprite");
     } else {
-      ui.enemyPortrait.innerHTML = `<div class="shell" id="enemy-shell"><div class="sprite" id="enemy-sprite">${enemy.emoji}</div></div>`;
-      ui.enemyShell = $("enemy-shell");
-      ui.enemySprite = $("enemy-sprite");
+      ui.enemyImg.classList.remove("boss-sprite");
     }
 
-    ui.enemySprite.classList.toggle("boss", enemy.isBoss);
-    ui.enemyPortrait.classList.toggle("boss", enemy.isBoss);
     ui.enemyName.textContent = enemy.name;
     ui.enemyFill.style.width = pct(enemy.hp, enemy.maxHp) + "%";
     ui.enemyText.textContent = "HP " + Math.max(0, enemy.hp) + "/" + enemy.maxHp;
@@ -773,11 +791,11 @@
     if (busy || playerDead) return;
     busy = true;
 
-    const dmg = Math.max(1, rand(player.attack - 4, player.attack + 4));
+    const dmg = Math.max(1, rand(player.attack - 3, player.attack + 3));
     enemy.hp = Math.max(0, enemy.hp - dmg);
 
-    shake(ui.enemyShell);
-    floatText(ui.enemyPortrait, "-" + dmg);
+    triggerShake(ui.enemyImg);
+    floatText(ui.enemyImg, "-" + dmg);
     addLog("Ти вдарив " + enemy.acc + " на " + dmg + " шкоди");
     haptic("impact", "medium");
 
@@ -788,13 +806,14 @@
   }
 
   function enemyAttack() {
-    const incomingDamage = Math.max(1, enemy.attack - player.defense);
-    const blocked = enemy.attack - incomingDamage;
-    player.hp = Math.max(0, player.hp - incomingDamage);
+    // Відсоткова формула шкоди за умовами завдання
+    let finalDamage = Math.floor(enemy.attack * (100 / (100 + player.defense)));
+    finalDamage = Math.max(1, finalDamage);
+    player.hp = Math.max(0, player.hp - finalDamage);
 
-    shake(ui.playerShell);
-    floatText(ui.playerPortrait, "-" + incomingDamage, "player-dmg");
-    addLog(enemy.name + " вдарив тебе на " + incomingDamage + " шкоди (заблоковано " + blocked + ")");
+    triggerShake(ui.playerImg);
+    floatText(ui.playerImg, "-" + finalDamage, "player-dmg");
+    addLog(enemy.name + " завдав тобі " + finalDamage + " шкоди");
     haptic("impact", "light");
 
     if (player.hp <= 0) {
@@ -821,14 +840,14 @@
 
     addLog(logMsg);
     haptic("notify", "success");
-    ui.enemyShell.classList.add("dead");
+    ui.enemyImg.style.opacity = "0.3";
 
     player.floor += 1;
     saveGame();
 
     setTimeout(() => {
       enemy = makeEnemy(player.floor);
-      ui.enemyShell.classList.remove("dead");
+      ui.enemyImg.style.opacity = "1";
       addLog(enemy.isBoss ? "⚠️ УВАГА! На вас нападає БОС: " + enemy.name + "!" : "З’являється " + enemy.name + "...");
       busy = false;
       updateUI();
@@ -852,7 +871,7 @@
     busy = false;
     enemy = makeEnemy(player.floor);
     ui.death.classList.remove("show");
-    ui.enemyShell.classList.remove("dead");
+    ui.enemyImg.style.opacity = "1";
     ui.log.innerHTML = "";
     addLog("Бій починається...");
     updateUI();
@@ -874,7 +893,7 @@
     const healed = Math.min(healAmount, player.maxHp - player.hp);
     player.potions -= 1;
     player.hp += healed;
-    floatText(ui.playerPortrait, "+" + healed, "heal");
+    floatText(ui.playerImg, "+" + healed, "heal");
     addLog("Ти випив зілля і відновив " + healed + " HP");
     haptic("notify", "success");
     updateUI();
@@ -991,4 +1010,4 @@
   if (player.hp <= 0) showDeath();
 </script>
 </body>
-          </html>
+</html>
