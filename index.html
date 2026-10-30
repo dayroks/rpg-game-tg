@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -101,12 +100,12 @@
   .battle-scene {
     position: relative;
     width: 100%;
-    height: 260px;
+    height: 350px;
     border-radius: 16px;
     overflow: hidden;
-    border: 2px solid var(--ember-dim);
+    border: 2px solid #333;
     background-color: #0a0a0a;
-    margin-bottom: 4px;
+    margin-bottom: 12px;
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
   }
   .bg-image {
@@ -120,25 +119,17 @@
     filter: brightness(0.7);
   }
   
-  @keyframes breathe {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
-  }
-
   .battle-sprite {
     position: absolute;
     bottom: 10px;
-    height: 140px;
     width: auto;
     object-fit: contain;
     z-index: 2;
-    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.8));
-    animation: breathe 3s ease-in-out infinite;
+    filter: drop-shadow(0px 15px 10px rgba(0,0,0,0.9)) brightness(1.1) contrast(1.1);
     transition: transform 0.1s;
   }
-  .player-sprite { left: 20px; }
+  .player-sprite { left: 20px; height: 170px; }
   .enemy-sprite { right: 20px; }
-  .boss-sprite { height: 180px; }
 
   /* Shake animation */
   @keyframes shake {
@@ -192,19 +183,6 @@
     background: rgba(0, 0, 0, 0.45); border: 1px solid var(--ember-dim); border-radius: 999px;
     z-index: 5;
   }
-
-  /* ---------- Log ---------- */
-  .log {
-    max-height: 130px;
-    min-height: 70px;
-    padding: 10px 12px;
-    overflow-y: auto;
-    background: var(--glass-strong);
-    font-size: 0.85rem;
-    line-height: 1.4;
-  }
-  .log p { margin-bottom: 4px; color: var(--muted); }
-  .log p:last-child { margin-bottom: 0; color: var(--bone); }
 
   /* ---------- Buttons ---------- */
   .btn-row {
@@ -310,12 +288,6 @@
   #death-screen .btn { flex: none; width: 100%; max-width: 280px; }
 
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-
-  @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; }
-    .battle-sprite { animation: none; }
-  }
 </style>
 </head>
 <body>
@@ -326,7 +298,6 @@
 
     <!-- ⚔️ БІЙ -->
     <section class="tab active" id="tab-arena" role="tabpanel" aria-labelledby="nav-arena">
-      <!-- Нова бойова сцена в стилі Clash Royale -->
       <div class="battle-scene">
         <div class="floor" id="floor">Етаж 1 | Руїни</div>
         <div class="gold js-gold">🪙 30</div>
@@ -339,11 +310,9 @@
         <div class="name" id="enemy-name">Слиз</div>
         <div class="hp">
           <div class="hp-track"><div class="hp-fill enemy" id="enemy-hp-fill"></div></div>
-          <div class="hp-text" id="enemy-hp-text">HP 36/36</div>
+          <div class="hp-text" id="enemy-hp-text">HP 35/35</div>
         </div>
       </div>
-
-      <div class="glass log" id="log" aria-live="polite"><p>Бій починається...</p></div>
 
       <div class="glass fighter-card">
         <div class="name">Мандрівник</div>
@@ -530,7 +499,7 @@
   }
   navButtons.forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
 
-  // ---------- Game Data & New Balance ----------
+  // ---------- Game Data & Balance ----------
   const SWORD_BONUS = 3, SWORD_BASE_PRICE = 50;
   const ARMOR_BONUS = 2, ARMOR_BASE_PRICE = 40;
   const MAX_EQUIP_LEVEL = 100;
@@ -570,8 +539,8 @@
     ], boss: { name: "Володар Кузень", acc: "Володаря Кузень", image: "img/boss-goblin.png", maxHp: 2700, attack: 150, baseGold: 1500, souls: 6 } },
 
     { min: 91, max: 100, name: "Храм", bgColor: "#14101c", enemies: [
-      { name: "Фанатик", acc: "Фанатика", emoji: "🧙", image: "img/goblin.png", maxHp: 1200, attack: 175, baseGold: 310 },
-      { name: "Храмовий Страж", acc: "Стража", emoji: "🗿", image: "img/skeleton.png", maxHp: 1400, attack: 195, baseGold: 360 }
+      { name: "Фанатик", acc: "Фанатика", image: "img/goblin.png", maxHp: 1200, attack: 175, baseGold: 310 },
+      { name: "Храмовий Страж", acc: "Стража", image: "img/skeleton.png", maxHp: 1400, attack: 195, baseGold: 360 }
     ], boss: { name: "Аватар Храму", acc: "Аватара Храму", image: "img/boss-goblin.png", maxHp: 3800, attack: 190, baseGold: 2200, souls: 8 } },
 
     { min: 101, max: 9999, name: "Порожнеча", bgColor: "#08060c", enemies: [
@@ -597,7 +566,6 @@
       };
     } else {
       const template = zone.enemies[Math.floor(Math.random() * zone.enemies.length)];
-      // Нова формула балансу: HP = база * (1.25 ^ (floor/2)), Атака = база * (1.2 ^ (floor/2))
       const hp = Math.round(template.maxHp * Math.pow(1.25, floor / 2));
       const attack = Math.round(template.attack * Math.pow(1.2, floor / 2));
       return {
@@ -608,7 +576,7 @@
   }
 
   // ---------- Player & Save ----------
-  const SAVE_KEY = "rpg_save_abyss_v5";
+  const SAVE_KEY = "rpg_save_abyss_v6";
 
   function newPlayer() {
     return {
@@ -677,7 +645,7 @@
     playerImg: $("player-img"), enemyImg: $("enemy-img"),
     enemyName: $("enemy-name"), enemyFill: $("enemy-hp-fill"), enemyText: $("enemy-hp-text"),
     playerFill: $("player-hp-fill"), playerText: $("player-hp-text"),
-    log: $("log"), statAttack: $("stat-attack"), statDefense: $("stat-defense"),
+    statAttack: $("stat-attack"), statDefense: $("stat-defense"),
     swordName: $("sword-name"), swordBonus: $("sword-bonus"), slotSword: $("slot-sword"),
     armorName: $("armor-name"), armorBonus: $("armor-bonus"), slotArmor: $("slot-armor"),
     shopPotionPrice: $("shop-potion-price"),
@@ -694,11 +662,7 @@
   const pct = (hp, max) => Math.max(0, Math.min(100, (hp / max) * 100));
 
   function addLog(text) {
-    const p = document.createElement("p");
-    p.textContent = text;
-    ui.log.appendChild(p);
-    while (ui.log.children.length > 40) ui.log.removeChild(ui.log.firstChild);
-    ui.log.scrollTop = ui.log.scrollHeight;
+    // Лог бою повністю вимкнено за запитом
   }
 
   function triggerShake(el) {
@@ -717,10 +681,9 @@
     const s = document.createElement("span");
     s.className = "float" + (extraClass ? " " + extraClass : "");
     s.textContent = text;
-    // Позиціонування відносно бойової сцени над спрайтом
     const leftPos = (rect.left - sceneRect.left) + (rect.width / 2);
     s.style.left = leftPos + "px";
-    s.style.top = "40px";
+    s.style.top = "60px";
     
     document.querySelector(".battle-scene").appendChild(s);
     setTimeout(() => s.remove(), 1000);
@@ -737,12 +700,14 @@
 
     ui.floor.textContent = `Етаж ${player.floor} | ${zone.name}`;
     
-    // Оновлення спрайтів та стилів ворога
+    // Оновлення зображення ворога та індивідуальних розмірів
     ui.enemyImg.src = enemy.image || "img/slime.png";
     if (enemy.isBoss) {
-      ui.enemyImg.classList.add("boss-sprite");
+      ui.enemyImg.style.height = "220px";
+    } else if (enemy.image && enemy.image.includes("slime")) {
+      ui.enemyImg.style.height = "110px";
     } else {
-      ui.enemyImg.classList.remove("boss-sprite");
+      ui.enemyImg.style.height = "160px";
     }
 
     ui.enemyName.textContent = enemy.name;
@@ -797,7 +762,6 @@
 
     triggerShake(ui.enemyImg);
     floatText(ui.enemyImg, "-" + dmg);
-    addLog("Ти вдарив " + enemy.acc + " на " + dmg + " шкоди");
     haptic("impact", "medium");
 
     if (enemy.hp <= 0) onEnemyDefeated();
@@ -807,18 +771,15 @@
   }
 
   function enemyAttack() {
-    // Відсоткова формула шкоди за умовами завдання
     let finalDamage = Math.floor(enemy.attack * (100 / (100 + player.defense)));
     finalDamage = Math.max(1, finalDamage);
     player.hp = Math.max(0, player.hp - finalDamage);
 
     triggerShake(ui.playerImg);
     floatText(ui.playerImg, "-" + finalDamage, "player-dmg");
-    addLog(enemy.name + " завдав тобі " + finalDamage + " шкоди");
     haptic("impact", "light");
 
     if (player.hp <= 0) {
-      addLog("Ти помер...");
       haptic("notify", "error");
       showDeath();
     } else {
@@ -833,13 +794,10 @@
     player.gold += earnedGold;
     player.runGold += earnedGold;
 
-    let logMsg = `Перемога! Ти отримав ${earnedGold} золота`;
     if (enemy.isBoss && enemy.soulsReward > 0) {
       player.souls += enemy.soulsReward;
-      logMsg += ` та здобув ${enemy.soulsReward} Душ(і)!`;
     }
 
-    addLog(logMsg);
     haptic("notify", "success");
     ui.enemyImg.style.opacity = "0.3";
 
@@ -849,7 +807,6 @@
     setTimeout(() => {
       enemy = makeEnemy(player.floor);
       ui.enemyImg.style.opacity = "1";
-      addLog(enemy.isBoss ? "⚠️ УВАГА! На вас нападає БОС: " + enemy.name + "!" : "З’являється " + enemy.name + "...");
       busy = false;
       updateUI();
     }, 1500);
@@ -873,8 +830,6 @@
     enemy = makeEnemy(player.floor);
     ui.death.classList.remove("show");
     ui.enemyImg.style.opacity = "1";
-    ui.log.innerHTML = "";
-    addLog("Бій починається...");
     updateUI();
     saveGame();
   }
@@ -895,7 +850,6 @@
     player.potions -= 1;
     player.hp += healed;
     floatText(ui.playerImg, "+" + healed, "heal");
-    addLog("Ти випив зілля і відновив " + healed + " HP");
     haptic("notify", "success");
     updateUI();
     saveGame();
@@ -1011,4 +965,4 @@
   if (player.hp <= 0) showDeath();
 </script>
 </body>
-</html>
+  </html>
