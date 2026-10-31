@@ -15,7 +15,7 @@ html,body{height:100%;height:100dvh;display:flex;flex-direction:column;overflow:
 #app{flex:1;display:flex;flex-direction:column;overflow:hidden;padding-top:env(safe-area-inset-top,0px)}
 
 /* Loading */
-#loading-screen{background-image:url('img/bg-loading.jpg');background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:center;align-items:center;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:9999;transition:opacity .5s ease}
+#loading-screen{background-image:url('img/bg-loading.png');background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:center;align-items:center;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:9999;transition:opacity .5s ease}
 .loading-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:1}
 .loading-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:20px;width:80%;max-width:400px;text-align:center}
 .loading-title{font-family:var(--font-title);font-size:2rem;font-weight:700;color:var(--gold);text-shadow:0 0 20px rgba(212,175,55,.8),0 4px 10px rgba(0,0,0,.9);letter-spacing:.08em}
@@ -26,8 +26,8 @@ html,body{height:100%;height:100dvh;display:flex;flex-direction:column;overflow:
 .screen{flex:1;width:100%;height:100%;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;position:relative}
 
 /* Main menu */
-#main-menu{background-image:url('img/bg-village.jpg');background-size:cover;background-position:center;height:100dvh;position:relative;display:flex;flex-direction:column;overflow:hidden;box-shadow:inset 0 0 100px rgba(0,0,0,.6);font-family:var(--font-body)}
-#menu-hero{position:absolute;bottom:175px;left:50%;transform:translateX(-50%);height:52vh;max-width:90%;object-fit:contain;z-index:2;filter:drop-shadow(0 15px 25px rgba(0,0,0,.7));pointer-events:none}
+#main-menu{background-image:url('img/bg-village.png');background-size:cover;background-position:center;height:100dvh;position:relative;display:flex;flex-direction:column;overflow:hidden;box-shadow:inset 0 0 100px rgba(0,0,0,.6);font-family:var(--font-body)}
+#menu-hero{position:absolute;bottom:175px;left:50%;transform:translateX(-50%);height:35vh;max-width:75%;object-fit:contain;z-index:2;filter:drop-shadow(0 15px 25px rgba(0,0,0,.7));pointer-events:none}
 .top-bar{position:absolute;top:20px;left:15px;right:15px;display:flex;justify-content:space-between;align-items:flex-start;z-index:10}
 .user-profile{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);border-radius:12px;padding:6px 12px;border:1px solid rgba(212,175,55,.3)}
 .avatar-frame{width:40px;height:40px;border-radius:50%;border:2px solid var(--gold);overflow:hidden;background:#000;flex-shrink:0}
@@ -48,7 +48,7 @@ html,body{height:100%;height:100dvh;display:flex;flex-direction:column;overflow:
 .side-btn .ico-fb{font-size:1.5rem;margin-bottom:2px}
 .bottom-nav-item .ico-fb{font-size:1.4rem;margin-bottom:4px}
 .bottom-container{position:absolute;bottom:0;left:0;width:100%;display:flex;flex-direction:column;align-items:center;z-index:10}
-.btn-main-play{width:85%;height:65px;background:linear-gradient(to bottom,#a80000,#4a0000);border:2px solid var(--gold);border-radius:12px;color:#fff;font-family:var(--font-title);font-size:1.5rem;font-weight:700;box-shadow:0 5px 15px rgba(0,0,0,.8);margin:0 auto 15px;display:block;cursor:pointer;transition:transform .12s ease,filter .12s ease;letter-spacing:.05em}
+.btn-main-play{width:70%;height:50px;background:linear-gradient(to bottom,#a80000,#4a0000);border:2px solid var(--gold);border-radius:12px;color:#fff;font-family:var(--font-title);font-size:1.5rem;font-weight:700;box-shadow:0 5px 15px rgba(0,0,0,.8);margin:0 auto 15px;display:block;cursor:pointer;transition:transform .12s ease,filter .12s ease;letter-spacing:.05em}
 .btn-main-play:active{transform:scale(.96);filter:brightness(1.2)}
 .bottom-nav-bar{width:100%;min-height:75px;padding-bottom:env(safe-area-inset-bottom,0px);background:rgba(10,10,10,.95);border-top:1px solid #333;display:flex;justify-content:space-around;align-items:center;backdrop-filter:blur(10px);border-radius:20px 20px 0 0;box-shadow:0 -5px 20px rgba(0,0,0,.7)}
 .bottom-nav-item{display:flex;flex-direction:column;align-items:center;font-size:.7rem;font-weight:600;color:#888;cursor:pointer;transition:color .15s ease;padding:8px 16px}
