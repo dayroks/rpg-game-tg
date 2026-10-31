@@ -49,7 +49,7 @@
 
   /* ---------- Loading Screen ---------- */
   #loading-screen {
-    background-image: url('img/bg-loading.png');
+    background-image: url('img/bg-loading.jpg');
     background-size: cover;
     background-position: center;
     display: flex;
@@ -128,9 +128,9 @@
     position: relative;
   }
 
-  /* ---------- Main Menu (LOKI 2 Style з 3D Лицарем) ---------- */
+  /* ---------- Main Menu ---------- */
   #main-menu {
-    background-image: url('img/bg-village.png');
+    background-image: url('img/bg-village.jpg');
     background-size: cover;
     background-position: center;
     height: 100dvh;
@@ -142,18 +142,12 @@
     font-family: var(--font-body);
   }
 
-  /* Центральний герой з анімацією дихання */
-  @keyframes hero-breathe {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(-10px); }
-  }
-
   #menu-hero {
     position: absolute;
     bottom: 90px;
     left: 50%;
     transform: translateX(-50%);
-    height: 35vh;
+    height: 60vh;
     object-fit: contain;
     z-index: 2;
     filter: drop-shadow(0 15px 25px rgba(0,0,0,0.7));
@@ -281,9 +275,10 @@
     transform: scale(0.92);
   }
 
-  .side-btn .icon {
-    font-size: 1.3rem;
-    line-height: 1;
+  .side-btn .nav-icon {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
   }
 
   .side-btn .label {
@@ -305,8 +300,8 @@
   }
 
   .btn-main-play {
-    width: 60%;
-    height: 40px;
+    width: 85%;
+    height: 65px;
     background: linear-gradient(to bottom, #a80000, #4a0000);
     border: 2px solid var(--gold);
     border-radius: 12px;
@@ -359,55 +354,9 @@
   }
 
   .bottom-nav-item .nav-icon {
-    font-size: 1.3rem;
-  }
-
-  /* ---------- Map Screen ---------- */
-  #map-screen {
-    padding: 20px 16px;
-    gap: 16px;
-    font-family: var(--font-title);
-  }
-
-  .map-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-
-  .location-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px;
-    border-radius: var(--radius);
-    background: var(--glass);
-    border: 1px solid var(--ember-dim);
-    cursor: pointer;
-    transition: transform 0.15s ease, border-color 0.15s ease;
-  }
-
-  .location-card:active {
-    transform: scale(0.98);
-  }
-
-  .location-card.locked {
-    opacity: 0.5;
-    cursor: not-allowed;
-    border-color: rgba(255,255,255,0.1);
-  }
-
-  .location-info h4 {
-    font-size: 1.1rem;
-    color: var(--ember);
-    margin-bottom: 4px;
-  }
-
-  .location-info p {
-    font-size: 0.8rem;
-    color: var(--muted);
-    font-family: var(--font-body);
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
   }
 
   /* ---------- Toast Notification ---------- */
@@ -676,10 +625,10 @@
 
 <div id="app">
 
-  <!-- 🏠 ГОЛОВНЕ МЕНЮ (LOKI 2 STYLE З 3D ЛИЦАРЕМ) -->
+  <!-- 🏠 ГОЛОВНЕ МЕНЮ -->
   <div id="main-menu" class="screen" style="display: none;">
     
-    <!-- 3D Герой по центру -->
+    <!-- Герой по центру (без анімації дихання) -->
     <img src="img/hero-menu.png" id="menu-hero" alt="Лицар">
 
     <!-- Верхня панель (HUD) -->
@@ -699,25 +648,25 @@
       </div>
     </div>
 
-    <!-- Бічні кнопки-макети -->
+    <!-- Бічні кнопки-макети з 3D іконками -->
     <div class="side-buttons-container">
       <div class="side-column">
-        <button class="side-btn mock-btn" type="button" data-feature="Мапа">
-          <span class="icon">🗺️</span>
+        <button class="side-btn" id="btn-open-map" type="button">
+          <img src="img/icons/icon-map.png" class="nav-icon" onerror="this.style.display='none'; this.parentElement.innerHTML += '🗺️';">
           <span class="label">Мапа</span>
         </button>
         <button class="side-btn mock-btn" type="button" data-feature="Квести">
-          <span class="icon">📜</span>
+          <img src="img/icons/icon-quest.png" class="nav-icon" onerror="this.style.display='none'; this.parentElement.innerHTML += '📜';">
           <span class="label">Квести</span>
         </button>
       </div>
       <div class="side-column">
         <button class="side-btn mock-btn" type="button" data-feature="Магазин">
-          <span class="icon">🛒</span>
+          <img src="img/icons/icon-shop.png" class="nav-icon" onerror="this.style.display='none'; this.parentElement.innerHTML += '🛒';">
           <span class="label">Магазин</span>
         </button>
         <button class="side-btn mock-btn" type="button" data-feature="Батл-пас">
-          <span class="icon">🏆</span>
+          <img src="img/icons/icon-pass.png" class="nav-icon" onerror="this.style.display='none'; this.parentElement.innerHTML += '🏆';">
           <span class="label">Батл-пас</span>
         </button>
       </div>
@@ -729,61 +678,59 @@
       
       <div class="bottom-nav-bar">
         <div class="bottom-nav-item active">
-          <span class="nav-icon">🏠</span>
+          <img src="img/icons/icon-home.png" class="nav-icon" onerror="this.style.display='none'; this.parentElement.innerHTML += '🏠';">
           <span>Меню</span>
         </div>
         <div class="bottom-nav-item mock-nav" data-feature="Профіль">
-          <span class="nav-icon">👤</span>
+          <img src="img/icons/icon-profile.png" class="nav-icon" onerror="this.style.display='none'; this.parentElement.innerHTML += '👤';">
           <span>Профіль</span>
         </div>
         <div class="bottom-nav-item mock-nav" data-feature="Налаштування">
-          <span class="nav-icon">⚙️</span>
+          <img src="img/icons/icon-settings.png" class="nav-icon" onerror="this.style.display='none'; this.parentElement.innerHTML += '⚙️';">
           <span>Налаштування</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 🗺️ ЕКРАН МАПИ -->
-  <div id="map-screen" class="screen" style="display: none;">
-    <div class="map-header">
-      <h2>Локації</h2>
-      <button class="btn small" id="btn-back-menu" type="button">Назад</button>
-    </div>
-
-    <div class="location-card" id="loc-ruins">
-      <div class="location-info">
-        <h4>🏛️ Руїни</h4>
-        <p>Початкові розвалини давнього замку. Етапи 1-15</p>
-      </div>
-      <span>▶</span>
-    </div>
-
-    <div class="location-card locked mock-btn" data-feature="Шахти">
-      <div class="location-info">
-        <h4>⛏️ Шахти</h4>
-        <p>Закинуті копальні. Етапи 16-30</p>
-      </div>
-      <span>🔒</span>
-    </div>
-
-    <div class="location-card locked mock-btn" data-feature="Печери">
-      <div class="location-info">
-        <h4>🕸️ Печери</h4>
-        <p>Темні тунелі безодні. Етапи 31-45</p>
-      </div>
-      <span>🔒</span>
-    </div>
+  <!-- 🗺️ ЕКРАН СКРОЛ-МАПИ -->
+  <div id="map-screen" class="screen" style="display: none; position: relative; width: 100%; height: 100dvh; overflow-y: auto; background-color: #0a0a0a;">
+     <div class="map-container" style="position: relative; width: 100%; min-height: 250vh; background-image: url('img/bg-worldmap.jpg'); background-size: 100% auto; background-repeat: no-repeat; background-position: top center; padding-bottom: 40vh;">
+        <button id="btn-back-menu" style="position: fixed; top: 20px; left: 20px; z-index: 20; background: rgba(0,0,0,0.8); border: 2px solid #d4af37; color: white; padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer;">← Назад</button>
+        
+        <div class="map-node" onclick="startLocation(1)" style="position: absolute; top: 10%; left: 30%; z-index: 10; text-align: center; cursor: pointer;">
+          <span style="font-size: 50px; filter: drop-shadow(0 0 10px #d4af37);">🌲</span><div style="background: rgba(0,0,0,0.8); color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.7rem; margin-top: -10px;">Ліс</div>
+        </div>
+        <div class="map-node" onclick="startLocation(16)" style="position: absolute; top: 28%; right: 25%; z-index: 10; text-align: center; cursor: pointer;">
+          <img src="img/icons/loc-ruins.png" style="width: 60px; filter: drop-shadow(0 0 10px #d4af37);" onerror="this.style.display='none'; this.parentElement.innerHTML = '🏰';"><div style="background: rgba(0,0,0,0.8); color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.7rem; margin-top: -10px;">Руїни</div>
+        </div>
+        <div class="map-node" onclick="startLocation(31)" style="position: absolute; top: 45%; left: 20%; z-index: 10; text-align: center; cursor: pointer;">
+          <img src="img/icons/loc-mines.png" style="width: 60px; filter: drop-shadow(0 0 10px #d4af37);" onerror="this.style.display='none'; this.parentElement.innerHTML = '⛏️';"><div style="background: rgba(0,0,0,0.8); color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.7rem; margin-top: -10px;">Шахти</div>
+        </div>
+        <div class="map-node" onclick="startLocation(46)" style="position: absolute; top: 62%; right: 20%; z-index: 10; text-align: center; cursor: pointer;">
+          <img src="img/icons/loc-caves.png" style="width: 60px; filter: drop-shadow(0 0 10px #d4af37);" onerror="this.style.display='none'; this.parentElement.innerHTML = '🕷️';"><div style="background: rgba(0,0,0,0.8); color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.7rem; margin-top: -10px;">Печери</div>
+        </div>
+        <div class="map-node" onclick="startLocation(61)" style="position: absolute; top: 78%; left: 25%; z-index: 10; text-align: center; cursor: pointer;">
+          <img src="img/icons/loc-ice-caves.png" style="width: 60px; filter: drop-shadow(0 0 10px #d4af37);" onerror="this.style.display='none'; this.parentElement.innerHTML = '🧊';"><div style="background: rgba(0,0,0,0.8); color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.7rem; margin-top: -10px;">Крижані</div>
+        </div>
+        <div class="map-node" onclick="startLocation(76)" style="position: absolute; top: 90%; right: 25%; z-index: 10; text-align: center; cursor: pointer;">
+          <img src="img/icons/loc-lava-caves.png" style="width: 60px; filter: drop-shadow(0 0 10px #d4af37);" onerror="this.style.display='none'; this.parentElement.innerHTML = '🌋';"><div style="background: rgba(0,0,0,0.8); color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.7rem; margin-top: -10px;">Лавові</div>
+        </div>
+        <div class="map-node" onclick="startLocation(91)" style="position: absolute; top: 110%; left: 50%; transform: translateX(-50%); z-index: 10; text-align: center; cursor: pointer;">
+          <span style="font-size: 50px; filter: drop-shadow(0 0 20px #8a2be2);">🌌</span><div style="background: rgba(0,0,0,0.8); color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.7rem; margin-top: -10px;">Войд</div>
+        </div>
+        <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 40vh; background: linear-gradient(to bottom, rgba(10,10,10,0) 0%, #0a0a0a 60%, #000 100%); z-index: 1; pointer-events: none;"></div>
+     </div>
   </div>
 
-  <!-- ⚔️ БОЙОВИЙ ЕКРАН ТА ВКАДКИ -->
+  <!-- ⚔️ БОЙОВИЙ ЕКРАН ТА ВКЛАДКИ -->
   <div id="battle-screen" class="screen" style="display: none;">
     <main id="screens-container">
 
       <!-- ⚔️ БІЙ -->
       <section class="tab active" id="tab-arena" role="tabpanel" aria-labelledby="nav-arena">
         <div class="battle-scene">
-          <div class="floor" id="floor">Етаж 1 | Руїни</div>
+          <div class="floor" id="floor">Етаж 1 | Ліс</div>
           <div class="gold js-gold">🪙 30</div>
           <img id="battle-bg" src="img/bg-ruins.png" class="bg-image" alt="Фон">
           <img id="player-img" src="img/player.png" class="battle-sprite player-sprite" alt="Герой">
@@ -1000,7 +947,7 @@
           }, 500);
         }, 200);
       }
-    }, 40); // 2000ms загалом
+    }, 40);
   });
 
   // ---------- Navigation / Screens ----------
@@ -1010,6 +957,16 @@
     if (target) {
       target.style.display = "flex";
     }
+  }
+
+  // ---------- Map Start Location Function ----------
+  function startLocation(floor) {
+      player.floor = floor;
+      enemy = makeEnemy(player.floor);
+      updateUI();
+      showScreen("battle-screen");
+      showTab("arena");
+      saveGame();
   }
 
   // ---------- Tabs ----------
@@ -1032,23 +989,13 @@
   const MAX_EQUIP_LEVEL = 100;
 
   const ZONES = [
-    { min: 1, max: 15, name: "Руїни", bgColor: "#120c1a", enemies: [
-      { name: "Слиз", acc: "Слиза", image: "img/slime.png", maxHp: 35, attack: 6, baseGold: 10 },
-      { name: "Скелет", acc: "Скелета", image: "img/skeleton.png", maxHp: 50, attack: 9, baseGold: 15 },
-      { name: "Гоблін", acc: "Гобліна", image: "img/goblin.png", maxHp: 65, attack: 12, baseGold: 22 },
-      { name: "Вовк", acc: "Вовка", image: "img/wolf.png", maxHp: 80, attack: 15, baseGold: 28 }
-    ], boss: { name: "Ватажок Гоблінів", acc: "Ватажка Гоблінів", image: "img/boss-goblin.png", maxHp: 220, attack: 24, baseGold: 150, souls: 1 } },
-
-    { min: 16, max: 30, name: "Шахти", bgColor: "#150f0a", enemies: [
-      { name: "Шахтар-Зомбі", acc: "Зомбі", image: "img/skeleton.png", maxHp: 100, attack: 20, baseGold: 35 },
-      { name: "Печерний Павук", acc: "Павука", image: "img/wolf.png", maxHp: 120, attack: 23, baseGold: 42 },
-      { name: "Крот-Мутант", acc: "Крота", image: "img/slime.png", maxHp: 140, attack: 26, baseGold: 50 }
-    ], boss: { name: "Володар Шахт", acc: "Володаря Шахт", image: "img/boss-goblin.png", maxHp: 450, attack: 42, baseGold: 280, souls: 2 } },
-
-    { min: 31, max: 45, name: "Печери", bgColor: "#091216", enemies: [
-      { name: "Кажанець", acc: "Кажанця", image: "img/wolf.png", maxHp: 180, attack: 35, baseGold: 60 },
-      { name: "Печерний Троль", acc: "Троля", image: "img/goblin.png", maxHp: 220, attack: 40, baseGold: 75 }
-    ], boss: { name: "Жах Безодні", acc: "Жаху Безодні", image: "img/boss-goblin.png", maxHp: 800, attack: 62, baseGold: 450, souls: 3 } }
+    { min: 1, max: 15, name: "Ліс", bgColor: "#0f1a12", enemies: [{ name: "Слиз", acc: "Слиза", image: "img/slime.png", maxHp: 35, attack: 6, baseGold: 10 }, { name: "Скелет", acc: "Скелета", image: "img/skeleton.png", maxHp: 50, attack: 9, baseGold: 15 }, { name: "Гоблін", acc: "Гобліна", image: "img/goblin.png", maxHp: 65, attack: 12, baseGold: 22 }, { name: "Вовк", acc: "Вовка", image: "img/wolf.png", maxHp: 80, attack: 15, baseGold: 28 }], boss: { name: "Ватажок Гоблінів", acc: "Ватажка", image: "img/boss-goblin.png", maxHp: 220, attack: 24, baseGold: 150, souls: 1 } },
+    { min: 16, max: 30, name: "Руїни", bgColor: "#120c1a", enemies: [{ name: "Скелет-Вартовий", acc: "Скелета", image: "img/skeleton.png", maxHp: 100, attack: 20, baseGold: 35 }, { name: "Гоблін-Воїн", acc: "Гобліна", image: "img/goblin.png", maxHp: 120, attack: 23, baseGold: 42 }], boss: { name: "Король Руїн", acc: "Короля", image: "img/boss-goblin.png", maxHp: 450, attack: 42, baseGold: 280, souls: 2 } },
+    { min: 31, max: 45, name: "Шахти", bgColor: "#150f0a", enemies: [{ name: "Шахтар-Зомбі", acc: "Зомбі", image: "img/skeleton.png", maxHp: 180, attack: 35, baseGold: 60 }, { name: "Печерний Павук", acc: "Павука", image: "img/wolf.png", maxHp: 220, attack: 40, baseGold: 75 }], boss: { name: "Володар Шахт", acc: "Володаря", image: "img/boss-goblin.png", maxHp: 800, attack: 62, baseGold: 450, souls: 3 } },
+    { min: 46, max: 60, name: "Печери", bgColor: "#0a1514", enemies: [{ name: "Кажанець", acc: "Кажанця", image: "img/wolf.png", maxHp: 300, attack: 55, baseGold: 100 }], boss: { name: "Жах Безодні", acc: "Жаху", image: "img/boss-goblin.png", maxHp: 1200, attack: 85, baseGold: 700, souls: 4 } },
+    { min: 61, max: 75, name: "Крижані", bgColor: "#0a1a24", enemies: [{ name: "Крижаний Вовк", acc: "Вовка", image: "img/wolf.png", maxHp: 450, attack: 80, baseGold: 150 }], boss: { name: "Крижаний Титан", acc: "Титана", image: "img/boss-goblin.png", maxHp: 1800, attack: 120, baseGold: 1000, souls: 5 } },
+    { min: 76, max: 90, name: "Лавові", bgColor: "#1a0a0a", enemies: [{ name: "Демон", acc: "Демона", image: "img/boss-goblin.png", maxHp: 600, attack: 110, baseGold: 220 }], boss: { name: "Володар Магми", acc: "Володаря", image: "img/boss-goblin.png", maxHp: 2500, attack: 180, baseGold: 1500, souls: 6 } },
+    { min: 91, max: 9999, name: "Войд", bgColor: "#050505", enemies: [{ name: "Тінь Войду", acc: "Тіні", image: "img/skeleton.png", maxHp: 1000, attack: 200, baseGold: 400 }], boss: { name: "Древній Бог", acc: "Бога", image: "img/boss-goblin.png", maxHp: 5000, attack: 300, baseGold: 5000, souls: 10 } }
   ];
 
   function getZone(floor) {
@@ -1084,7 +1031,7 @@
     return {
       hp: 100, maxHp: 100, gold: 30, attack: 15, defense: 5, potions: 0,
       swordLevel: 0, armorLevel: 0,
-      floor: 1, runGold: 0, souls: 0, perkHpLvl: 0, perkAtkLvl: 0
+      floor: 1, maxFloorReached: 1, runGold: 0, souls: 0, perkHpLvl: 0, perkAtkLvl: 0
     };
   }
 
@@ -1127,6 +1074,7 @@
       base.armorLevel = Math.max(0, Math.min(MAX_EQUIP_LEVEL, Math.floor(base.armorLevel)));
       base.potions = Math.max(0, Math.floor(base.potions));
       base.floor = Math.max(1, Math.floor(base.floor));
+      base.maxFloorReached = Math.max(1, Math.floor(base.maxFloorReached || 1));
       base.gold = Math.max(0, base.gold);
       base.runGold = Math.max(0, base.runGold);
       base.souls = Math.max(0, Math.floor(base.souls));
@@ -1325,6 +1273,10 @@
     ui.enemyImg.style.opacity = "0.3";
 
     player.floor += 1;
+    if (player.floor > player.maxFloorReached) {
+      player.maxFloorReached = player.floor;
+      saveGame();
+    }
 
     setTimeout(() => {
       enemy = makeEnemy(player.floor);
@@ -1475,13 +1427,12 @@
     showTab("arena");
   });
 
-  $("btn-back-menu").addEventListener("click", () => {
-    showScreen("main-menu");
+  $("btn-open-map").addEventListener("click", () => {
+    showScreen("map-screen");
   });
 
-  $("loc-ruins").addEventListener("click", () => {
-    showScreen("battle-screen");
-    showTab("arena");
+  $("btn-back-menu").addEventListener("click", () => {
+    showScreen("main-menu");
   });
 
   // Обробка показу "В розробці!" для макетних кнопок
@@ -1511,4 +1462,4 @@
   if (player.hp <= 0) showDeath();
 </script>
 </body>
-        </html>
+  </html>
